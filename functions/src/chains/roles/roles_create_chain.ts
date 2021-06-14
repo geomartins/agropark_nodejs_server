@@ -2,10 +2,10 @@ import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
 
 class RolesCreateChain {
-  snapshot: any;
-  docRef: any;
-  creator: any;
-  creatorRef: any;
+  private snapshot: any;
+  private docRef: any;
+  private creator: any;
+  private creatorRef: any;
 
   constructor(snapshot: any) {
     this.snapshot = snapshot;
@@ -14,7 +14,7 @@ class RolesCreateChain {
     this.creator = "";
   }
 
-  async fetchCreatorDetails() {
+  private async fetchCreatorDetails() {
     this.creator = await new FirestoreService()
         .getUserByUid(this.creatorRef);
     return this;
@@ -22,6 +22,7 @@ class RolesCreateChain {
 
 
   async updateSnapshot() {
+    await this.fetchCreatorDetails();
     await this.snapshot.ref.update({
       creator: this.creator,
     });
@@ -34,10 +35,10 @@ class RolesCreateChain {
     return this;
   }
 
-  async updateModuleActivities() {
+  async updateActivities() {
     this.docRef.id = this.snapshot.id;
     await new FirestoreService()
-        .updateModuleActivities(
+        .updateActivities(
             "roles", "create", "created a new role",
             this.creator, this.docRef );
     return this;

@@ -3,7 +3,7 @@
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
 
-class ModuleCategoriesCreateChain {
+class ExtensionCategoriesCreateChain {
     snapshot: any;
     docRef: any;
     creatorRef: any;
@@ -33,7 +33,7 @@ class ModuleCategoriesCreateChain {
 
     async updateConfiguration() {
       await new FirestoreService()
-          .updateConfigurations("module_categories",
+          .updateConfigurations("extension_categories",
               "create", this.snapshot.id);
       return this;
     }
@@ -42,16 +42,18 @@ class ModuleCategoriesCreateChain {
       this.docRef.id = this.snapshot.id;
       await new FirestoreService()
           .updateActivities(
-              "module_categories", "create", "created a new module category",
+              "extension_categories", "create",
+              "created a new extension category",
               this.creator, this.docRef );
       return this;
     }
 
     async updateAngolia() {
     /** Updating Algolia */
-      (await new AlgoliaService("module_categories", this.snapshot)).create();
+      (await new AlgoliaService("extension_categories",
+          this.snapshot)).create();
       return this;
     }
 }
 
-export default ModuleCategoriesCreateChain;
+export default ExtensionCategoriesCreateChain;

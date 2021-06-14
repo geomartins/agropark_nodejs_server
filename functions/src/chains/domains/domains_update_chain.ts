@@ -1,7 +1,7 @@
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
 
-class DepartmentsUpdateChain {
+class DomainsUpdateChain {
   snapshot: any;
   afterData: any;
   beforeData: any;
@@ -46,7 +46,7 @@ class DepartmentsUpdateChain {
 
   async updateConfiguration() {
     await new FirestoreService()
-        .updateConfigurations("departments", "update",
+        .updateConfigurations("domains", "update",
             this.snapshot.after.id);
 
     return this;
@@ -56,7 +56,7 @@ class DepartmentsUpdateChain {
     this.docRef.id = this.snapshot.after.id;
     await new FirestoreService()
         .updateActivities(
-            "departments", "update", "updated a department",
+            "domains", "update", "updated a domain",
             this.editor, this.docRef);
     return this;
   }
@@ -64,9 +64,9 @@ class DepartmentsUpdateChain {
 
   async updateAngolia() {
   /** Updating Algolia */
-    (await new AlgoliaService("departments", this.snapshot)).update();
+    (await new AlgoliaService("domains", this.snapshot)).update();
     return this;
   }
 }
 
-export default DepartmentsUpdateChain;
+export default DomainsUpdateChain;

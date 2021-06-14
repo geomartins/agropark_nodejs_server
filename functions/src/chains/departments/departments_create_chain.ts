@@ -18,7 +18,7 @@ class DepartmentsCreateChain {
       this.category = "";
     }
 
-    async fetchCreatorDetails() {
+    private async fetchCreatorDetails() {
       this.creator = await new FirestoreService()
           .getUserByUid(this.creatorRef);
       return this;
@@ -26,6 +26,7 @@ class DepartmentsCreateChain {
 
 
     async updateSnapshot() {
+      await this.fetchCreatorDetails();
       await this.snapshot.ref.update({
         creator: this.creator,
       });
@@ -38,10 +39,10 @@ class DepartmentsCreateChain {
       return this;
     }
 
-    async updateModuleActivities() {
+    async updateActivities() {
       this.docRef.id = this.snapshot.id;
       await new FirestoreService()
-          .updateModuleActivities(
+          .updateActivities(
               "departments", "create", "created a new department",
               this.creator, this.docRef );
       return this;

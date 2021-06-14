@@ -4,90 +4,63 @@ import AlgoliaService from "../../services/algolia_service";
 class ModuleCategoriesUpdateChain {
     snapshot: any;
     afterData: any;
+    beforeData: any;
     docRef: any;
-    user_type: any;
-    user: any;
-    event: string;
-    obj: any;
-    obj_status: any;
-
+    editorRef: any;
+    editor: any;
+    status: boolean;
     constructor(snapshot: any) {
       this.snapshot = snapshot;
       this.afterData = snapshot.after.data();
+      this.beforeData = snapshot.before.data();
       this.docRef = snapshot.after.data();
-      this.user_type = "";
-      this.user = "";
-      this.event = "";
-      this.obj = {};
-      this.obj_status = false;
+      this.editorRef = snapshot.after.data().editor;
+      this.editor = "";
+      this.status = false;
     }
+
 
     get objectStatus() {
-      return this.obj_status;
+      return this.status;
     }
 
-    get userType() {
-      return this.user_type;
-    }
-
-    async verifyUserTypeAndEvent() {
+    async verifyIfDocIsEdited() {
       if (typeof this.afterData.editor == "string") {
-        this.user_type = "editor";
-        this.event = "update";
-      }
-      if (typeof this.afterData.deleter == "string") {
-        this.user_type = "deleter";
-        this.event = "delete";
+        this.status = true;
       }
       return this;
     }
 
-    async fetchUserDetails() {
-      this.user = await new FirestoreService()
-          .getUserByUid(this.afterData[this.user_type]);
-      this.obj[this.user_type] = this.user;
+    private async fetchUserDetails() {
+      this.editor = await new FirestoreService()
+          .getUserByUid(this.editorRef);
       return this;
     }
 
     async updateSnapshot() {
-      await this.snapshot.after.ref.update(this.obj);
       await this.fetchUserDetails();
+      await this.snapshot.after.ref.update({editor: this.editor});
+      // await this.fetchUserDetails();
       return this;
     }
-
-    async deleteSnapshot() {
-      await this.snapshot.after.ref.delete();
-      return this;
-    }
-
-
-    async checkObjectStatus() {
-      if (Object.keys(this.obj).length === 0) {
-        this.obj_status = false;
-      } else {
-        this.obj_status = true;
-      }
-      return this;
-    }
-
 
     async updateConfiguration() {
-      const confType = (this.event == "update") ? "create": this.event;
       await new FirestoreService()
-          .updateConfigurations("module_categories", confType,
+          .updateConfigurations("module_categories", "update",
               this.snapshot.after.id);
 
       return this;
     }
 
-    async updateModuleActivities() {
+    async updateActivities() {
       this.docRef.id = this.snapshot.after.id;
       await new FirestoreService()
-          .updateModuleActivities(
-              "module_categories", this.event, this.event+"d a module category",
-              this.user, this.docRef);
+          .updateActivities(
+              "module_categories", "update", "updated a module category",
+              this.editor, this.docRef);
       return this;
     }
+
 
     async updateAngolia() {
     /** Updating Algolia */

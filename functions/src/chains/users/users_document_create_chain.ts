@@ -1,19 +1,18 @@
-
-
 import FirestoreService from "../../services/firestore_service";
-import AlgoliaService from "../../services/algolia_service";
 
-class ModuleCategoriesCreateChain {
+class UsersDocumentCreateChain {
     snapshot: any;
     docRef: any;
     creatorRef: any;
     creator: any;
+    userId: string;
 
-    constructor(snapshot: any) {
+    constructor(snapshot: any, userId: string) {
       this.snapshot = snapshot;
       this.docRef = snapshot.data();
       this.creatorRef = snapshot.data().creator;
       this.creator = "";
+      this.userId = userId;
     }
 
     private async fetchCreatorDetails() {
@@ -31,27 +30,14 @@ class ModuleCategoriesCreateChain {
       return this;
     }
 
-    async updateConfiguration() {
-      await new FirestoreService()
-          .updateConfigurations("module_categories",
-              "create", this.snapshot.id);
-      return this;
-    }
-
     async updateActivities() {
       this.docRef.id = this.snapshot.id;
       await new FirestoreService()
           .updateActivities(
-              "module_categories", "create", "created a new module category",
+              "users", "create", "created a new user document",
               this.creator, this.docRef );
-      return this;
-    }
-
-    async updateAngolia() {
-    /** Updating Algolia */
-      (await new AlgoliaService("module_categories", this.snapshot)).create();
       return this;
     }
 }
 
-export default ModuleCategoriesCreateChain;
+export default UsersDocumentCreateChain;

@@ -6,12 +6,11 @@ export const createUsersReset = functions.firestore
     .document("users/{userId}/resets/{resetId}")
     .onCreate(async (snap, context) => {
       try {
-        const a = await (await
-        new UsersResetCreateChain(snap, context.params.userId)
-            .fetchCreatorDetails()).updateSnapshot();
+        const a = await
+        new UsersResetCreateChain(snap, context.params.userId).updateSnapshot();
 
         await (await a.updatePassword())
-            .updateModuleActivities().then(() => {
+            .updateActivities().then(() => {
               console.log("Password Update Successful");
             });
       } catch (err) {

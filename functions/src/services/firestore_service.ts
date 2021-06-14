@@ -1,10 +1,184 @@
 import * as admin from "firebase-admin";
+
 const timestamp = admin.firestore.FieldValue.serverTimestamp();
+
+type RoleModuleDependencyValue = { name: string; category: string; } | {};
+
 class FirestoreService {
   constructor() {}
   async getObjectByUid(name: string, uid: string) {
     return admin.firestore().collection(name).doc(uid).get();
   }
+
+  async updateRoleExtensionDependencies(type: string, extensionId: string,
+      oldValue: RoleModuleDependencyValue,
+      newValue: RoleModuleDependencyValue) {
+    if (type == "update") {
+      await admin.firestore().collectionGroup("extensions")
+          .where("name", "==", extensionId).get().then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+              return;
+            }
+            querySnapshot.forEach((doc) => {
+              doc.ref.update(newValue);
+            });
+          });
+    }
+
+    if (type == "delete") {
+      await admin.firestore().collectionGroup("extensions")
+          .where("name", "==", extensionId).get().then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+              return;
+            }
+            querySnapshot.forEach((doc) => {
+              doc.ref.delete();
+            });
+          });
+    }
+  }
+
+
+  async updateRoleModuleDependencies(type: string, moduleId: string,
+      oldValue: RoleModuleDependencyValue,
+      newValue: RoleModuleDependencyValue) {
+    if (type == "update") {
+      await admin.firestore().collectionGroup("modules")
+          .where("name", "==", moduleId).get().then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+              return;
+            }
+            querySnapshot.forEach((doc) => {
+              doc.ref.update(newValue);
+            });
+          });
+    }
+
+    if (type == "delete") {
+      await admin.firestore().collectionGroup("modules")
+          .where("name", "==", moduleId).get().then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+              return;
+            }
+            querySnapshot.forEach((doc) => {
+              doc.ref.delete();
+            });
+          });
+    }
+
+    // db.collectionGroup('landmarks')
+  }
+  async updateRoleModuleRef(type: string, roleId: string,
+      obj: {name: string; category: string},
+      oldObj?:{ name: string; category: string}) {
+    if (type == "create") {
+      admin.firestore().collection("roles").doc(roleId)
+          .get().then((doc) => {
+            if (doc.exists) {
+              const modules_ref = doc.data()?.modules_ref ?? [];
+              modules_ref.push(obj);
+
+              doc.ref.update({
+                modules_ref: [...new Set(modules_ref)],
+              });
+            } else {
+              doc.ref.set({
+                modules_ref: [obj],
+              }, {merge: true});
+            }
+          });
+    }
+
+    if (type == "delete") {
+      admin.firestore().collection("roles").doc(roleId)
+          .get().then((doc) => {
+            if (doc.exists) {
+              const modules_ref = doc?.data()?.modules_ref;
+              const index = modules_ref.indexOf(obj); // remove the obj
+              modules_ref.splice(index, 1);
+              doc.ref.update({
+                modules_ref: [...new Set(modules_ref)],
+              });
+            }
+          });
+    }
+
+
+    if (type == "update") {
+      admin.firestore().collection("roles").doc(roleId)
+          .get().then((doc) => {
+            if (doc.exists) {
+              const modules_ref = doc?.data()?.modules_ref;
+              const index = modules_ref.indexOf(oldObj); // remove the obj
+              modules_ref.splice(index, 1);
+              modules_ref.push(obj);
+              doc.ref.update({
+                modules_ref: [...new Set(modules_ref)],
+              });
+            }
+          });
+    }
+
+
+    return null;
+  }
+
+
+  async updateRoleExtensionRef(type: string, roleId: string,
+      obj: {name: string; category: string},
+      oldObj?:{ name: string; category: string}) {
+    if (type == "create") {
+      admin.firestore().collection("roles").doc(roleId)
+          .get().then((doc) => {
+            if (doc.exists) {
+              const extensions_ref = doc.data()?.extensions_ref ?? [];
+              extensions_ref.push(obj);
+
+              doc.ref.update({
+                extensions_ref: [...new Set(extensions_ref)],
+              });
+            } else {
+              doc.ref.set({
+                extensions_ref: [obj],
+              }, {merge: true});
+            }
+          });
+    }
+
+    if (type == "delete") {
+      admin.firestore().collection("roles").doc(roleId)
+          .get().then((doc) => {
+            if (doc.exists) {
+              const extensions_ref = doc?.data()?.extensions_ref;
+              const index = extensions_ref.indexOf(obj); // remove the obj
+              extensions_ref.splice(index, 1);
+              doc.ref.update({
+                extensions_ref: [...new Set(extensions_ref)],
+              });
+            }
+          });
+    }
+
+
+    if (type == "update") {
+      admin.firestore().collection("roles").doc(roleId)
+          .get().then((doc) => {
+            if (doc.exists) {
+              const extensions_ref = doc?.data()?.extensions_ref;
+              const index = extensions_ref.indexOf(oldObj); // remove the obj
+              extensions_ref.splice(index, 1);
+              extensions_ref.push(obj);
+              doc.ref.update({
+                extensions_ref: [...new Set(extensions_ref)],
+              });
+            }
+          });
+    }
+
+
+    return null;
+  }
+
 
   async getUserByUid(uid: string | {id: string}) {
     uid = typeof uid == "string" ? uid : uid.id;
@@ -21,6 +195,28 @@ class FirestoreService {
         }).catch((err) => console.log(err));
   }
 
+  async getModuleByUid(uid: string) {
+    return await admin.firestore().collection("modules")
+        .doc(uid).get().then((doc) => {
+          const result = {
+            category: doc?.data()?.category,
+            name: doc?.data()?.name,
+          };
+          return result;
+        }).catch((err) => console.log(err));
+  }
+
+  async getExtensionByUid(uid: string) {
+    return await admin.firestore().collection("extensions")
+        .doc(uid).get().then((doc) => {
+          const result = {
+            category: doc?.data()?.category,
+            name: doc?.data()?.name,
+          };
+          return result;
+        }).catch((err) => console.log(err));
+  }
+
   async getModuleCategoryById(categoryId: string) {
     return admin.firestore().collection("module_categories")
         .doc(categoryId).get().then((doc) => {
@@ -30,13 +226,13 @@ class FirestoreService {
         }).catch((err) => console.log(err));
   }
 
-  async updateModuleActivities(
+  async updateActivities(
       module: string,
       action: string,
       activity: string,
-      author: string | any,
+      author: any,
       docRef: any, notify_roles = []) {
-    return admin.firestore().collection("module_activities").doc().create({
+    return admin.firestore().collection("activities").doc().create({
       module: module,
       action: action,
       activity: activity,
@@ -68,7 +264,7 @@ class FirestoreService {
 
     if (type == "delete") {
       admin.firestore().collection("configurations").
-          doc(docId) .get().then((doc) => {
+          doc(docId).get().then((doc) => {
             if (doc.exists) {
               const ids = doc?.data()?.ids;
               const index = ids.indexOf(id); // remove the id
@@ -81,6 +277,14 @@ class FirestoreService {
     }
 
     return null;
+  }
+
+
+  async fetchExpiringDomainSnapshot(expiryDate: any) {
+    return await admin.firestore().collection("domains")
+        .where("expiry_date", "<=", expiryDate)
+        .orderBy("expiry_date", "desc")
+        .get();
   }
 }
 

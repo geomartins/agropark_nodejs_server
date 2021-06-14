@@ -31,6 +31,16 @@ class AlgoliaService {
       const index = client.initIndex(this.name);
       return index.deleteObject(id);
     }
+
+    static async search(name: string, input: string) {
+      const index = client.initIndex(name);
+      return index.search(input).then(({hits}) => {
+        console.log(hits);
+        return hits;
+      }).catch((err) => {
+        return err;
+      });
+    }
 }
 
 

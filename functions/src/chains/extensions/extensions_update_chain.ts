@@ -1,7 +1,7 @@
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
 
-class DepartmentsUpdateChain {
+class ExtensionsUpdateChain {
   snapshot: any;
   afterData: any;
   beforeData: any;
@@ -9,7 +9,7 @@ class DepartmentsUpdateChain {
   editorRef: any;
   editor: any;
   status: boolean;
-  constructor(snapshot: any) {
+  constructor(snapshot: any, private readonly moduleId: string) {
     this.snapshot = snapshot;
     this.afterData = snapshot.after.data();
     this.beforeData = snapshot.before.data();
@@ -46,17 +46,30 @@ class DepartmentsUpdateChain {
 
   async updateConfiguration() {
     await new FirestoreService()
-        .updateConfigurations("departments", "update",
+        .updateConfigurations("extensions", "update",
             this.snapshot.after.id);
 
     return this;
   }
 
+  async updateDependencies() {
+    const newValue = {name: this.afterData.name,
+      category: this.afterData.category};
+    const oldValue = {name: this.beforeData.name,
+      category: this.beforeData.category};
+
+    await new FirestoreService()
+        .updateRoleExtensionDependencies("update",
+            this.moduleId, newValue, oldValue );
+    return this;
+  }
+
+
   async updateActivities() {
     this.docRef.id = this.snapshot.after.id;
     await new FirestoreService()
         .updateActivities(
-            "departments", "update", "updated a department",
+            "extensions", "update", "updated an extension",
             this.editor, this.docRef);
     return this;
   }
@@ -64,9 +77,9 @@ class DepartmentsUpdateChain {
 
   async updateAngolia() {
   /** Updating Algolia */
-    (await new AlgoliaService("departments", this.snapshot)).update();
+    (await new AlgoliaService("extensions", this.snapshot)).update();
     return this;
   }
 }
 
-export default DepartmentsUpdateChain;
+export default ExtensionsUpdateChain;

@@ -1,18 +1,17 @@
 import FirestoreService from "../../services/firestore_service";
-import AlgoliaService from "../../services/algolia_service";
 
-class DepartmentsUpdateChain {
-  snapshot: any;
-  afterData: any;
-  beforeData: any;
-  docRef: any;
-  editorRef: any;
-  editor: any;
-  status: boolean;
+class RolesExtensionUpdateChain {
+  private snapshot: any;
+  private afterData: any;
+  // private beforeData: any;
+  private docRef: any;
+  private editorRef: any;
+  private editor: any;
+  private status: boolean;
   constructor(snapshot: any) {
     this.snapshot = snapshot;
     this.afterData = snapshot.after.data();
-    this.beforeData = snapshot.before.data();
+    // this.beforeData = snapshot.before.data();
     this.docRef = snapshot.after.data();
     this.editorRef = snapshot.after.data().editor;
     this.editor = "";
@@ -20,7 +19,7 @@ class DepartmentsUpdateChain {
   }
 
 
-  get objectStatus() {
+  get objectStatus() : boolean {
     return this.status;
   }
 
@@ -44,29 +43,14 @@ class DepartmentsUpdateChain {
     return this;
   }
 
-  async updateConfiguration() {
-    await new FirestoreService()
-        .updateConfigurations("departments", "update",
-            this.snapshot.after.id);
-
-    return this;
-  }
-
   async updateActivities() {
     this.docRef.id = this.snapshot.after.id;
     await new FirestoreService()
         .updateActivities(
-            "departments", "update", "updated a department",
+            "roles", "update", "updated a roles-extension",
             this.editor, this.docRef);
-    return this;
-  }
-
-
-  async updateAngolia() {
-  /** Updating Algolia */
-    (await new AlgoliaService("departments", this.snapshot)).update();
     return this;
   }
 }
 
-export default DepartmentsUpdateChain;
+export default RolesExtensionUpdateChain;

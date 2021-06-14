@@ -19,22 +19,16 @@ class ModulesCreateChain {
       this.category = "";
     }
 
-    async fetchCreatorDetails() {
+    private async fetchCreatorDetails() {
       this.creator = await new FirestoreService()
           .getUserByUid(this.creatorRef);
       return this;
     }
 
-    async fetchCategoryDetails() {
-      this.category = await new FirestoreService()
-          .getModuleCategoryById(this.categoryRef);
-      return this;
-    }
-
     async updateSnapshot() {
+      await this.fetchCreatorDetails();
       await this.snapshot.ref.update({
         creator: this.creator,
-        category: this.category,
       });
       return this;
     }
@@ -45,10 +39,10 @@ class ModulesCreateChain {
       return this;
     }
 
-    async updateModuleActivities() {
+    async updateActivities() {
       this.docRef.id = this.snapshot.id;
       await new FirestoreService()
-          .updateModuleActivities(
+          .updateActivities(
               "modules", "create", "created a new module",
               this.creator, this.docRef );
       return this;

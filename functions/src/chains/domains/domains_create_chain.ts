@@ -1,13 +1,13 @@
-
-
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
+import WhoisService from "../../services/whois_service";
 
-class ModuleCategoriesCreateChain {
+class DomainsCreateChain {
     snapshot: any;
     docRef: any;
     creatorRef: any;
     creator: any;
+    record: any;
 
     constructor(snapshot: any) {
       this.snapshot = snapshot;
@@ -22,19 +22,28 @@ class ModuleCategoriesCreateChain {
       return this;
     }
 
+    async fetchRecord() {
+      const record = await new WhoisService().fetchRecord(this.docRef.name);
+      if (record) {
+        this.record = record;
+      }
+      return this;
+    }
+
 
     async updateSnapshot() {
       await this.fetchCreatorDetails();
+      await this.fetchRecord();
       await this.snapshot.ref.update({
         creator: this.creator,
+        ...this.record,
       });
       return this;
     }
 
     async updateConfiguration() {
       await new FirestoreService()
-          .updateConfigurations("module_categories",
-              "create", this.snapshot.id);
+          .updateConfigurations("domains", "create", this.snapshot.id);
       return this;
     }
 
@@ -42,16 +51,16 @@ class ModuleCategoriesCreateChain {
       this.docRef.id = this.snapshot.id;
       await new FirestoreService()
           .updateActivities(
-              "module_categories", "create", "created a new module category",
+              "domains", "create", "created a new domain",
               this.creator, this.docRef );
       return this;
     }
 
     async updateAngolia() {
     /** Updating Algolia */
-      (await new AlgoliaService("module_categories", this.snapshot)).create();
+      (await new AlgoliaService("domains", this.snapshot)).create();
       return this;
     }
 }
 
-export default ModuleCategoriesCreateChain;
+export default DomainsCreateChain;

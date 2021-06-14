@@ -6,12 +6,11 @@ export const createUsers = functions.firestore
     .document("users/{userId}")
     .onCreate(async (snap, context) => {
       try {
-        const a = (await new UsersCreateChain(snap)
-            .fetchCreatorDetails());
+        const a = new UsersCreateChain(snap);
         const b = await (await (await a.updateSnapshot())
             .createAuth()).createCustomClaim();
 
-        await (await b.updateModuleActivities()).updateAngolia().then(() => {
+        await (await b.updateActivities()).updateAngolia().then(() => {
           console.log("createUserChain successfully executed");
           return null;
         });
@@ -34,11 +33,13 @@ export const updateUsers = functions.firestore
           return;
         }
 
+
         const updateDisplayName = await (await (await updateUserChain
             .updateSnapshot()).updateCustomClaims()).updateDisplayName();
 
-        await (await updateDisplayName.updateModuleActivities())
-            .updateAngolia();
+        await (await (await updateDisplayName.updateAvatar())
+            .updateActivities()).updateAngolia();
+
 
         return null;
       } catch (err) {

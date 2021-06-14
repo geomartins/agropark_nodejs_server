@@ -7,16 +7,16 @@ import ModulesDeleteChain from "../chains/modules/modules_delete_chain";
 export const createModules = functions.firestore
     .document("modules/{docId}")
     .onCreate(async (snap, context) => {
-      const a = await (await new ModulesCreateChain(snap)
-          .fetchCreatorDetails()).fetchCategoryDetails();
-      const b = await (await a.updateSnapshot()).updateConfiguration();
-      await (await b.updateModuleActivities()).updateAngolia().then(() => {
-        console.log("createModule successfully executed");
-        return null;
-      }).catch((err: any) => {
+      try {
+        const a = new ModulesCreateChain(snap);
+        const b = await (await a.updateSnapshot()).updateConfiguration();
+        await (await b.updateActivities()).updateAngolia().then(() => {
+          console.log("createModule successfully executed");
+          return null;
+        });
+      } catch (err) {
         console.log(err);
-      });
-      return null;
+      }
     });
 
 
@@ -24,58 +24,46 @@ export const updateModules = functions.firestore
     .document("modules/{docId}")
     .onUpdate(async (snap, context) => {
       try {
-        const updateModuleChain = new ModulesUpdateChain(snap);
-        const userType = await (await updateModuleChain
-            .verifyUserTypeAndEvent())
-            .userType;
+        const updateModuleChain =
+        new ModulesUpdateChain(snap, context.params.docId);
+        const status = await (await updateModuleChain
+            .verifyIfDocIsEdited()).objectStatus;
 
-        if (userType == "") {
+        if (status === false) {
           return;
         }
 
-        if (userType == "deleter") {
-          await updateModuleChain.deleteSnapshot();
-          return;
-        }
+        const updateActivities = await (await (await
+        updateModuleChain.updateSnapshot()).
+            updateConfiguration()).updateActivities();
 
-        if (userType == "editor") {
-          const updatedSnapshot = await (await (await updateModuleChain
-              .verifyUserTypeAndEvent())
-              .fetchUserDetails()).updateSnapshot();
-
-          const status = await (await updatedSnapshot.checkObjectStatus())
-              .objectStatus;
-
-          if (status == false) {
-            return;
-          }
-          if (status == true) {
-            (await (await (await updatedSnapshot.checkObjectStatus())
-                .updateConfiguration()).updateModuleActivities())
-                .updateAngolia();
-            return;
-          }
-        }
+        await (await updateActivities.updateDependencies())
+            .updateAngolia().then(()=> {
+              console.log("Updated Module Categories Successfully");
+              return null;
+            });
+        return;
       } catch (err) {
         console.log(err);
+        return null;
       }
-
-
-      return null;
     });
 
 
 export const deleteModules = functions.firestore
     .document("modules/{docId}")
     .onDelete(async (snap, context) => {
-      const moduleDeleteChain = new ModulesDeleteChain(snap);
-      await (await (await moduleDeleteChain
-          .updateConfiguration())
-          .updateModuleActivities())
-          .updateAngolia().then(() => {
-            console.log("deleteModuleChain succesfully executed");
-          }).catch((err) => {
-            console.log(err);
-          });
-      return null;
+      try {
+        const moduleDeleteChain =
+        new ModulesDeleteChain(snap, context.params.docId);
+
+        await (await (await moduleDeleteChain.updateConfiguration())
+            .updateDependencies()).updateAngolia().then(()=> {
+          console.log("Module delete successful");
+          return;
+        });
+      } catch (err) {
+        console.log(err);
+        return;
+      }
     });

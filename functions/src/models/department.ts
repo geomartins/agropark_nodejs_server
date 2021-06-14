@@ -10,31 +10,35 @@ import DepartmentsUpdateChain from
 export const createDepartments = functions.firestore
     .document("departments/{docId}")
     .onCreate(async (snap, context) => {
-      const a = (await new DepartmentsCreateChain(snap)
-          .fetchCreatorDetails());
-      const b = await (await a.updateSnapshot()).updateConfiguration();
-      await (await b.updateModuleActivities()).updateAngolia().then(() => {
-        console.log("createDepartmentChain successfully executed");
-        return null;
-      }).catch((err) => {
+      try {
+        const a = new DepartmentsCreateChain(snap);
+
+        const b = await (await a.updateSnapshot()).updateConfiguration();
+        await (await b.updateActivities()).updateAngolia().then(() => {
+          console.log("Department created successfully");
+          return null;
+        });
+      } catch (err) {
         console.log(err);
-      });
-      return null;
+        return;
+      }
     });
 
 export const deleteDepartments = functions.firestore
     .document("departments/{docId}")
     .onDelete(async (snap, context) => {
-      const deleteDepartmentChain = new DepartmentsDeleteChain(snap);
-      await (await (await deleteDepartmentChain
-          .updateConfiguration())
-          .updateModuleActivities())
-          .updateAngolia().then(() => {
-            console.log("deleteDepartmentChain succesfully executed");
-          }).catch((err) => {
-            console.log(err);
-          });
-      return null;
+      try {
+        const deleteDepartmentChain = new DepartmentsDeleteChain(snap);
+        await (await (await deleteDepartmentChain.updateConfiguration())
+            .updateAngolia()).updateAngolia().then(() => {
+          console.log("Department deleted successfully");
+          return;
+        });
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+      return;
     });
 
 
@@ -43,41 +47,25 @@ export const updateDepartments = functions.firestore
     .onUpdate(async (snap, context) => {
       try {
         const updateDepartmentChain = new DepartmentsUpdateChain(snap);
-        const userType = await (await updateDepartmentChain
-            .verifyUserTypeAndEvent())
-            .userType;
+        const status = await (await updateDepartmentChain
+            .verifyIfDocIsEdited()).objectStatus;
 
-        if (userType == "") {
+        if (status === false) {
           return;
         }
 
-        if (userType == "deleter") {
-          await updateDepartmentChain.deleteSnapshot();
+        const updateActivities = await (await (await
+        updateDepartmentChain.updateSnapshot())
+            .updateConfiguration()).updateActivities();
+
+        await updateActivities.updateAngolia().then(() => {
+          console.log("Department Updated Successfully");
           return;
-        }
-
-        if (userType == "editor") {
-          const updatedSnapshot = await (await (await updateDepartmentChain
-              .verifyUserTypeAndEvent())
-              .fetchUserDetails()).updateSnapshot();
-
-          const status = await (await updatedSnapshot.checkObjectStatus())
-              .objectStatus;
-
-          if (status == false) {
-            return;
-          }
-          if (status == true) {
-            (await (await (await updatedSnapshot.checkObjectStatus())
-                .updateConfiguration()).updateModuleActivities())
-                .updateAngolia();
-            return;
-          }
-        }
+        });
       } catch (err) {
         console.log(err);
+        return null;
       }
 
-
-      return null;
+      return;
     });

@@ -2,21 +2,20 @@
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
 
-class ModuleCategoriesDeleteChain {
+class DomainsDeleteChain {
   constructor(protected snapshot: any) {}
 
   async updateConfiguration() {
     await new FirestoreService()
-        .updateConfigurations("module_categories",
-            "delete", this.snapshot.id);
+        .updateConfigurations("domains", "delete", this.snapshot.id);
     return this;
   }
 
-  async updateAngolia() {
+  async updateAngolia() : Promise<this> {
     /** Updating Algolia */
-    (await new AlgoliaService("module_categories", this.snapshot)).delete();
+    (await new AlgoliaService("domains", this.snapshot)).delete();
     return this;
   }
 }
 
-export default ModuleCategoriesDeleteChain;
+export default DomainsDeleteChain;

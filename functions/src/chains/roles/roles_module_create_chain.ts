@@ -1,21 +1,20 @@
 import FirestoreService from "../../services/firestore_service";
-import AuthenticationService from "../../services/authentication_service";
 
-class UsersResetCreateChain {
+class RolesModuleCreateChain {
     private snapshot: any;
     private docRef: any;
     private creatorRef: any;
     private creator: any;
-    private password: string;
-    private readonly userId: string;
+    private category: string;
+    private readonly roleId: string;
 
-    constructor(snapshot: any, userId: string) {
+    constructor(snapshot: any, roleId: string) {
       this.snapshot = snapshot;
       this.docRef = snapshot.data();
       this.creatorRef = snapshot.data().creator;
+      this.category = "";
       this.creator = "";
-      this.password = snapshot.data().password;
-      this.userId = userId;
+      this.roleId = roleId;
     }
 
     private async fetchCreatorDetails() {
@@ -24,19 +23,34 @@ class UsersResetCreateChain {
       return this;
     }
 
+    async fetchModuleCategory() {
+      const result = await new FirestoreService()
+          .getModuleByUid(this.docRef.name);
+
+      if (result) {
+        this.category = result.category;
+      } else {
+        this.category = "";
+      }
+
+      return this;
+    }
+
 
     async updateSnapshot() {
       await this.fetchCreatorDetails();
       await this.snapshot.ref.update({
         creator: this.creator,
-        password: "",
+        category: this.category,
       });
       return this;
     }
 
-    async updatePassword() {
-      await new AuthenticationService()
-          .updatePassword(this.userId, this.password);
+    async updateRoleModuleRef() {
+      // This will update modules_ref
+      await new FirestoreService()
+          .updateRoleModuleRef("create", this.roleId,
+              {"name": this.docRef.name, "category": this.category});
       return this;
     }
 
@@ -44,10 +58,10 @@ class UsersResetCreateChain {
       this.docRef.id = this.snapshot.id;
       await new FirestoreService()
           .updateActivities(
-              "users", "create", "created a new user password",
+              "roles", "create", "created a new roles-module",
               this.creator, this.docRef );
       return this;
     }
 }
 
-export default UsersResetCreateChain;
+export default RolesModuleCreateChain;

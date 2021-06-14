@@ -38,6 +38,12 @@ class AuthenticationService {
     });
   }
 
+  async updateAvatar(uid: string, avatar: string) {
+    return admin.auth().updateUser(uid, {
+      photoURL: avatar,
+    });
+  }
+
   async updateCustomClaims(uid: string, role: string) {
     const user = await admin.auth().getUser(uid); // 1
     if (user.customClaims && user.customClaims.moderator == role) {
