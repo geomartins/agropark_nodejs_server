@@ -10,51 +10,33 @@ const app = express();
 admin.initializeApp(functions.config().firebase);
 
 import routes from "./routes/routes";
-import {createUsers, updateUsers} from "./models/user";
-import {createRoles, updateRoles, deleteRoles} from "./models/role";
 import {createRolesModule, deleteRolesModule, updateRolesModule}
   from "./models/roles_module";
 import {createRolesExtension, updateRolesExtension,
   deleteRolesExtension} from "./models/roles_extension";
 import {createUsersReset} from "./models/users_reset";
 import {createUsersDocument} from "./models/users_document";
-import {createModules, updateModules, deleteModules} from "./models/module";
-import {createDepartments, updateDepartments, deleteDepartments}
-  from "./models/department";
 
-import {createDomains, updateDomains, deleteDomains, scheduledDomains}
-  from "./models/domain";
 
-import {createModuleCategories, updateModuleCategories,
-  deleteModuleCategories} from "./models/module_category";
-
-import {createExtensions, updateExtensions, deleteExtensions}
-  from "./models/extension";
-
-import {createExtensionCategories, updateExtensionCategories,
-  deleteExtensionCategories}
-  from "./models/extension_category";
+import * as roles from "./models/role";
+import * as users from "./models/user";
+import * as seed_bank_crop_categories from "./models/seed_bank_crop_category";
+import * as seed_banks from "./models/seed_bank";
+import * as domains from "./models/domain";
+import * as extensions from "./models/extension";
+import * as modules from "./models/module";
+import * as module_categories from "./models/module_category";
+import * as extension_categories from "./models/extension_category";
+import * as departments from "./models/department";
 
 app.use(bodyParser.urlencoded({extended: false}));
-
-// app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "http://localhost:7000");
-//   res.header("Access-Control-Allow-Methods"
-// , "GET, POST, PUT, PATCH, DELETE");
-//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-//   next();
-// });
 app.use(cors());
 app.use(routes);
-
 const webApi = functions.https.onRequest(app);
+
+
 export default {
   webApi,
-
-  // Users
-  createUsers,
-  updateUsers,
 
   // Users/id/Reset
   createUsersReset,
@@ -62,10 +44,6 @@ export default {
   // Users/id/document
   createUsersDocument,
 
-  // Roles
-  createRoles,
-  updateRoles,
-  deleteRoles,
 
   // Roles/id/module
   createRolesModule,
@@ -78,37 +56,16 @@ export default {
   updateRolesExtension,
 
 
-  // Modules
-  createModules,
-  updateModules,
-  deleteModules,
-
-  // Extensions
-  createExtensions,
-  updateExtensions,
-  deleteExtensions,
-
-  // Departments
-  createDepartments,
-  updateDepartments,
-  deleteDepartments,
-
-  // Domains
-  createDomains,
-  updateDomains,
-  deleteDomains,
-  scheduledDomains,
-
-
-  // ModuleCategories
-  createModuleCategories,
-  updateModuleCategories,
-  deleteModuleCategories,
-
-  // ExtensionCategories
-  createExtensionCategories,
-  updateExtensionCategories,
-  deleteExtensionCategories,
+  ...users,
+  ...roles,
+  ...domains,
+  ...seed_bank_crop_categories,
+  ...seed_banks,
+  ...modules,
+  ...module_categories,
+  ...extensions,
+  ...extension_categories,
+  ...departments,
 
 
 };
