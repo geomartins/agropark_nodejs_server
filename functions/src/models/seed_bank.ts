@@ -9,6 +9,12 @@ import SeedBanksDeleteChain from
 import SeedBanksUpdateChain
   from "../chains/seed_banks/seed_banks_update_chain";
 
+import SeedBanksInventoryCreateChain from
+  "../chains/seed_banks/seed_banks_inventory_create_chain";
+
+import SeedBanksInventoryUpdateChain
+  from "../chains/seed_banks/seed_banks_inventory_update_chain";
+
 export const createSeedBanks = functions.firestore
     .document("seed_banks/{docId}")
     .onCreate(async (snap, context) => {
@@ -71,3 +77,48 @@ export const updateSeedBanks = functions.firestore
 
       return;
     });
+
+
+export const createSeedBanksInventory = functions.firestore
+    .document("seed_banks/{seedBankId}/inventories/{inventoryId}")
+    .onCreate(async (snap, context) => {
+      try {
+        await (await new
+        SeedBanksInventoryCreateChain(snap, context.params.seedBankId)
+            .updateSnapshot()
+        ).updateActivities().then(() => {
+          console.log("SeedBanks-Inventory created successfully");
+          return;
+        });
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+      return null;
+    });
+
+export const updateSeedBanksInventory = functions.firestore
+    .document("seed_banks/{seedBankId}/inventories/{inventoryId}")
+    .onUpdate(async (snap, context) => {
+      try {
+        const updateSeedBanksInventoryUpdateChain =
+        new SeedBanksInventoryUpdateChain(snap);
+        const status = await (await updateSeedBanksInventoryUpdateChain
+            .verifyIfDocIsEdited()).objectStatus;
+
+        if (status === false) {
+          return;
+        }
+
+        await (await updateSeedBanksInventoryUpdateChain
+            .updateSnapshot()).updateActivities().then(()=> {
+          console.log("SeedBanks-Inventory updated successfully");
+        });
+        return null;
+      } catch (err) {
+        console.log(err);
+        return null;
+      }
+    });
+
+

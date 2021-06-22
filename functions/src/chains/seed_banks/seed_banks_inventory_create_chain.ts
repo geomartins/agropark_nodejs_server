@@ -1,0 +1,43 @@
+import FirestoreService from "../../services/firestore_service";
+
+class SeedBanksInventoryCreateChain {
+    private snapshot: any;
+    private docRef: any;
+    private creatorRef: any;
+    private creator: any;
+    private readonly seedBankId: string;
+
+    constructor(snapshot: any, seedBankId: string) {
+      this.snapshot = snapshot;
+      this.docRef = snapshot.data();
+      this.creatorRef = snapshot.data().creator;
+      this.creator = "";
+      this.seedBankId = seedBankId;
+    }
+
+    private async fetchCreatorDetails() {
+      this.creator = await new FirestoreService()
+          .getUserByUid(this.creatorRef);
+      return this;
+    }
+
+
+    async updateSnapshot() {
+      await this.fetchCreatorDetails();
+      await this.snapshot.ref.update({
+        creator: this.creator,
+      });
+      return this;
+    }
+
+    async updateActivities() {
+      this.docRef.id = this.snapshot.id;
+      await new FirestoreService()
+          .updateActivities(
+              "seed_banks", "create", "created a new seed_banks-inventory",
+              this.creator, this.docRef );
+      return this;
+    }
+}
+
+export default SeedBanksInventoryCreateChain;

@@ -10,13 +10,6 @@ const app = express();
 admin.initializeApp(functions.config().firebase);
 
 import routes from "./routes/routes";
-import {createRolesModule, deleteRolesModule, updateRolesModule}
-  from "./models/roles_module";
-import {createRolesExtension, updateRolesExtension,
-  deleteRolesExtension} from "./models/roles_extension";
-import {createUsersReset} from "./models/users_reset";
-import {createUsersDocument} from "./models/users_document";
-
 
 import * as roles from "./models/role";
 import * as users from "./models/user";
@@ -37,24 +30,6 @@ const webApi = functions.https.onRequest(app);
 
 export default {
   webApi,
-
-  // Users/id/Reset
-  createUsersReset,
-
-  // Users/id/document
-  createUsersDocument,
-
-
-  // Roles/id/module
-  createRolesModule,
-  deleteRolesModule,
-  updateRolesModule,
-
-  // Roles/id/extension
-  createRolesExtension,
-  deleteRolesExtension,
-  updateRolesExtension,
-
 
   ...users,
   ...roles,
