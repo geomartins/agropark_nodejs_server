@@ -22,7 +22,9 @@ export const createSeedBanks = functions.firestore
         const a = new SeedBanksCreateChain(snap);
 
         const b = await (await a.updateSnapshot()).updateConfiguration();
-        await (await b.updateActivities()).updateAngolia().then(() => {
+        const c = await (await (await b.updateActivities())
+            .updateSnapshot()).updatePushy();
+        await c.updateAngolia().then(() => {
           console.log("SeedBank created successfully");
           return null;
         });
@@ -38,7 +40,7 @@ export const deleteSeedBanks = functions.firestore
       try {
         const deleteSeedBankChain = new SeedBanksDeleteChain(snap);
         await (await (await deleteSeedBankChain.updateConfiguration())
-            .updateAngolia()).updateAngolia().then(() => {
+            .updatePushy()).updateAngolia().then(() => {
           console.log("SeedBank deleted successfully");
           return;
         });
@@ -66,10 +68,11 @@ export const updateSeedBanks = functions.firestore
         updateSeedBankChain.updateSnapshot())
             .updateConfiguration()).updateActivities();
 
-        await updateActivities.updateAngolia().then(() => {
-          console.log("SeedBank Updated Successfully");
-          return;
-        });
+        await (await updateActivities.updatePushy())
+            .updateAngolia().then(() => {
+              console.log("SeedBank Updated Successfully");
+              return;
+            });
       } catch (err) {
         console.log(err);
         return null;
@@ -83,10 +86,12 @@ export const createSeedBanksInventory = functions.firestore
     .document("seed_banks/{seedBankId}/inventories/{inventoryId}")
     .onCreate(async (snap, context) => {
       try {
-        await (await new
+        const a = await (await new
         SeedBanksInventoryCreateChain(snap, context.params.seedBankId)
             .updateSnapshot()
-        ).updateActivities().then(() => {
+        ).updateActivities();
+
+        await a.updatePushy().then(() => {
           console.log("SeedBanks-Inventory created successfully");
           return;
         });
@@ -110,8 +115,9 @@ export const updateSeedBanksInventory = functions.firestore
           return;
         }
 
-        await (await updateSeedBanksInventoryUpdateChain
-            .updateSnapshot()).updateActivities().then(()=> {
+        const updateActivity = await (await updateSeedBanksInventoryUpdateChain
+            .updateSnapshot()).updateActivities();
+        await updateActivity.updatePushy().then(()=> {
           console.log("SeedBanks-Inventory updated successfully");
         });
         return null;

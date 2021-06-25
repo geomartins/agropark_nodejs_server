@@ -1,4 +1,5 @@
 import FirestoreService from "../../services/firestore_service";
+import PushyService from "../../services/pushy_service";
 
 class SeedBanksInventoryUpdateChain {
   private snapshot: any;
@@ -48,6 +49,20 @@ class SeedBanksInventoryUpdateChain {
         .updateActivities(
             "seed_banks", "update", "updated a seed_bank inventory",
             this.editor, this.docRef);
+    return this;
+  }
+
+  async updatePushy() {
+    const fullname = this.editor.firstname + " "+ this.editor.lastname;
+    const cropType = this.docRef.module_refs.name +
+    " "+this.docRef.module_refs.category;
+
+    const title = "SeedBank-Inventory Update Action!!";
+    const message = `${fullname} updated  ${cropType} inventory`;
+    const topic = "/topics/seed_banks";
+
+    new PushyService().pushToTopics(topic,
+        {title: title, message: message}, {});
     return this;
   }
 }

@@ -25,6 +25,10 @@ import * as departments from "./models/department";
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cors());
 app.use(routes);
+
+app.use((error: any, req:any, res: any, next: any) => {
+  return res.status(error.httpStatusCode ?? 500).json(error);
+});
 const webApi = functions.https.onRequest(app);
 
 

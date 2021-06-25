@@ -179,6 +179,27 @@ class FirestoreService {
     return null;
   }
 
+  async getTopicsByUid(uid: string) {
+    const userData = await this.getUserByUid(uid);
+    if (!userData) {
+      return [];
+    }
+    return admin.firestore().collection("roles")
+        .doc(userData.role).get().then((doc) => {
+          if (doc.exists) {
+            const topics: string[] = [];
+            const modules_ref: [{name: string; category: string}] =
+             doc.data()?.modules_ref;
+            for (const mod of modules_ref) {
+              topics.push(mod.name);
+            }
+            return topics;
+          } else {
+            return [];
+          }
+        });
+  }
+
 
   async getUserByUid(uid: string | {id: string}) {
     uid = typeof uid == "string" ? uid : uid.id;

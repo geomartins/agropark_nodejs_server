@@ -1,18 +1,19 @@
 import FirestoreService from "../../services/firestore_service";
+import PushyService from "../../services/pushy_service";
 
 class SeedBanksInventoryCreateChain {
     private snapshot: any;
     private docRef: any;
     private creatorRef: any;
     private creator: any;
-    private readonly seedBankId: string;
+    // private readonly seedBankId: string;
 
     constructor(snapshot: any, seedBankId: string) {
       this.snapshot = snapshot;
       this.docRef = snapshot.data();
       this.creatorRef = snapshot.data().creator;
       this.creator = "";
-      this.seedBankId = seedBankId;
+      // this.seedBankId = seedBankId;
     }
 
     private async fetchCreatorDetails() {
@@ -27,6 +28,24 @@ class SeedBanksInventoryCreateChain {
       await this.snapshot.ref.update({
         creator: this.creator,
       });
+      return this;
+    }
+
+    async updatePushy() {
+      const fullname = this.creator.firstname + " "+ this.creator.lastname;
+      const cropType = this.docRef.module_refs.name +
+      " "+this.docRef.module_refs.category;
+      const quantity = this.docRef.quantity;
+      const type = this.docRef.type == "add" ? "added" : "removed";
+      const pro = this.docRef.type == "add" ? "to" : "from";
+
+      const title = "SeedBank-Inventory Create Action!!";
+      const message =
+      `${fullname} ${type} ${quantity} item(s) ${pro} ${cropType} inventory`;
+      const topic = "/topics/seed_banks";
+
+      new PushyService().pushToTopics(topic,
+          {title: title, message: message}, {});
       return this;
     }
 

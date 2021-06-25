@@ -1,5 +1,6 @@
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
+import PushyService from "../../services/pushy_service";
 
 class SeedBanksUpdateChain {
   snapshot: any;
@@ -58,6 +59,19 @@ class SeedBanksUpdateChain {
         .updateActivities(
             "seed_banks", "update", "updated a seed bank",
             this.editor, this.docRef);
+    return this;
+  }
+
+  async updatePushy() {
+    const fullname = this.editor.firstname + " "+this.editor.lastname;
+    const cropType = this.beforeData.name + " "+this.beforeData.category;
+
+    const title = "SeedBank Update Action!!";
+    const message = `${fullname} updated ${cropType} `;
+    const topic = "/topics/seed_banks";
+
+    new PushyService().pushToTopics(topic,
+        {title: title, message: message}, {});
     return this;
   }
 
