@@ -60,9 +60,10 @@ class SeedBanksInventoryUpdateChain {
     const title = "SeedBank-Inventory Update Action!!";
     const message = `${fullname} updated  ${cropType} inventory`;
     const topic = "/topics/seed_banks";
+    const data = {title: title, message: message};
 
-    new PushyService().pushToTopics(topic,
-        {title: title, message: message}, {});
+    new FirestoreService().updateModuleNotifier("seed_banks", data );
+    new PushyService().pushToTopics(topic, data, {});
     return this;
   }
 }

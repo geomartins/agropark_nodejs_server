@@ -38,6 +38,33 @@ export const search = async (req: any, res: any, next: any) => {
   return;
 };
 
+export const moduleNotifierCleaner = async (req: any, res: any, next: any) => {
+  try {
+    const role = req.body.role;
+    const module_name = req.body.module_name;
+    const uid = req.info.uid;
+
+
+    admin.firestore().collection("module_notifiers")
+        .where("module", "==", module_name)
+        .where("unvisited_roles", "array-contains", role)
+        .get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            console.log(doc.data());
+            doc.ref.update({
+              unvisited_roles: admin.firestore.FieldValue.arrayRemove(role),
+              visited_ids: admin.firestore.FieldValue.arrayUnion(uid),
+            });
+          });
+          return res.status(200).json({message: "successfully"});
+        });
+  } catch (err: any) {
+    console.log(err);
+    res.status(400).json({message: err});
+    // next(new Error(err));
+  }
+};
+
 export const subscribeTopicsToDevice =
 async (req: any, res: any, next: any) => {
   try {
@@ -46,13 +73,16 @@ async (req: any, res: any, next: any) => {
     const uid = req.info.uid;
     console.log(uid, "uid");
 
-    const topics = await new FirestoreService().getTopicsByUid(uid);
-    console.log(topics, "topiccs");
+    // Update User Device Token
+    await new FirestoreService().updateUserDeviceToken(uid, deviceToken);
 
+    // Get Topics
+    const topics = await new FirestoreService().getTopicsByUid(uid);
 
     // Unsubscribe Old Topic
     await new PushyService().unsubscribeOldTopics(deviceToken);
 
+    // Subscribe New Topic
     await new PushyService().subscribe(deviceToken, topics);
 
     return res.status(200).json({message: "device subscribed to topic"});

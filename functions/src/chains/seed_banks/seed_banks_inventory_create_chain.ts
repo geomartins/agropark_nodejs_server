@@ -43,9 +43,12 @@ class SeedBanksInventoryCreateChain {
       const message =
       `${fullname} ${type} ${quantity} item(s) ${pro} ${cropType} inventory`;
       const topic = "/topics/seed_banks";
+      const data = {title: title, message: message};
 
+      new FirestoreService().updateModuleNotifier("seed_banks", data );
       new PushyService().pushToTopics(topic,
-          {title: title, message: message}, {});
+          data, {});
+
       return this;
     }
 

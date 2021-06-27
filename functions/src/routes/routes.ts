@@ -13,5 +13,9 @@ router.post("/subscribe", [authMiddleware.auth,
   utilityController.subscribeTopicsToDevice]);
 
 
+router.post("/module_notifier_cleaner",
+    [authMiddleware.auth, utilityController.moduleNotifierCleaner]);
+
+
 export default router;
 

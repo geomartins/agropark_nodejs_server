@@ -17,9 +17,13 @@ class SeedBanksDeleteChain {
     const title = "SeedBank Delete Action!!!!";
     const message = "Item was deleted from seedbank";
     const topic = "/topics/seed_banks";
+    const data = {title: title, message: message};
 
-    new PushyService().pushToTopics(topic,
-        {title: title, message: message}, {});
+    // Notifier
+    new FirestoreService().updateModuleNotifier("seed_banks", data );
+    // Pushy
+    new PushyService().pushToTopics(topic, data, {});
+
     return this;
   }
 

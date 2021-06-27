@@ -10,6 +10,57 @@ class FirestoreService {
     return admin.firestore().collection(name).doc(uid).get();
   }
 
+  async updateModuleNotifier(name: string,
+      data: {title: string; message: string} ) {
+    // Get Role associated with the module
+    admin.firestore().collection("modules")
+        .doc(name).get().then((doc) => {
+          if (doc.exists) {
+            const roles_ref: string[] = doc.data()?.roles_ref ?? [];
+            admin.firestore().collection("module_notifiers").add({
+              ...data,
+              roles: roles_ref,
+              unvisited_roles: roles_ref,
+              visited_ids: [],
+              module: name,
+              timestamp: timestamp,
+            });
+          }
+        });
+  }
+
+  async updateExtensionNotifier(name:string,
+      data: {title: string; message: string} ) {
+  // Get Role associated with the module
+    // admin.firestore().collection("modules")
+    //     .doc(name).get().then((doc) => {
+    //       if (doc.exists) {
+    //         const roles_ref: string[] = doc.data()?.roles_ref ?? [];
+    //         admin.firestore().collection("extension_notifiers").add({
+    //           ...data,
+    //           roles: roles_ref,
+    //           visited_roles: [],
+    //         });
+    //       }
+    //     });
+  }
+  async updateModulesCollectionRoleRef(type: string,
+      module: string, role: string) {
+    if (type == "create") {
+      await admin.firestore().collection("modules").doc(module).update({
+        roles_ref: admin.firestore.FieldValue.arrayUnion(role),
+      });
+    }
+
+    if (type == "delete") {
+      await admin.firestore().collection("modules").doc(module).update({
+        roles_ref: admin.firestore.FieldValue.arrayRemove(role),
+      });
+    }
+
+    return;
+  }
+
   async updateRoleExtensionDependencies(type: string, extensionId: string,
       oldValue: RoleModuleDependencyValue,
       newValue: RoleModuleDependencyValue) {
@@ -198,6 +249,27 @@ class FirestoreService {
             return [];
           }
         });
+  }
+
+  async updateUserDeviceToken(uid: string, deviceToken: string) {
+    let status = false;
+    return admin.firestore().collection("users").where("device_tokens",
+        "array-contains", deviceToken).get().then((querySnapshot)=> {
+      querySnapshot.forEach((doc) => {
+        if (doc.id == uid) {
+          status = true;
+        } else {
+          doc.ref.update({device_tokens:
+              admin.firestore.FieldValue.arrayRemove(deviceToken)});
+        }
+      });
+    }).then(()=> {
+      if (status == false) {
+        admin.firestore().collection("users").doc(uid).update({
+          device_tokens: admin.firestore.FieldValue.arrayUnion(deviceToken),
+        });
+      }
+    });
   }
 
 

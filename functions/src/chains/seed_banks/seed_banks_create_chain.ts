@@ -43,12 +43,18 @@ class SeedBanksCreateChain {
       const fullname = this.creator.firstname + " "+ this.creator.lastname;
       const cropType = this.docRef.name + " "+this.docRef.category;
       const topic = "/topics/seed_banks";
+      const data = {
+        title: "SeedBank Create Action!!",
+        message: `${fullname} added ${cropType} to seedbank`,
+      };
 
-      new PushyService().pushToTopics(topic,
-          {title: "SeedBank Create Action!!",
-            message: `${fullname} added ${cropType} to seedbank`}, {});
+      // Notifier
+      new FirestoreService().updateModuleNotifier("seed_banks", data );
+      // Pushy
+      new PushyService().pushToTopics(topic, data, {});
       return this;
     }
+
 
     async updateActivities() {
       this.docRef.id = this.snapshot.id;

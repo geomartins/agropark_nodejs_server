@@ -69,9 +69,11 @@ class SeedBanksUpdateChain {
     const title = "SeedBank Update Action!!";
     const message = `${fullname} updated ${cropType} `;
     const topic = "/topics/seed_banks";
+    const data = {title: title, message: message};
 
+    new FirestoreService().updateModuleNotifier("seed_banks", data );
     new PushyService().pushToTopics(topic,
-        {title: title, message: message}, {});
+        data, {});
     return this;
   }
 

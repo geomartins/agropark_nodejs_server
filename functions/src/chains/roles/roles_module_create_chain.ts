@@ -51,6 +51,17 @@ class RolesModuleCreateChain {
       await new FirestoreService()
           .updateRoleModuleRef("create", this.roleId,
               {"name": this.docRef.name, "category": this.category});
+
+      await this.updateModulesCollectionRoleRef();
+
+      return this;
+    }
+
+    async updateModulesCollectionRoleRef() {
+      // This will update modules_ref
+      await new FirestoreService()
+          .updateModulesCollectionRoleRef("create",
+              this.docRef.name, this.roleId);
       return this;
     }
 
