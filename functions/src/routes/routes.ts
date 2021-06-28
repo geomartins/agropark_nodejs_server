@@ -12,6 +12,10 @@ router.post("/search", [authMiddleware.auth, utilityController.search]);
 router.post("/subscribe", [authMiddleware.auth,
   utilityController.subscribeTopicsToDevice]);
 
+router.get("/test", (req, res, next) => {
+  res.render("notification");
+});
+
 
 router.post("/module_notifier_cleaner",
     [authMiddleware.auth, utilityController.moduleNotifierCleaner]);

@@ -1,4 +1,5 @@
 import * as dateAndTime from "date-and-time";
+import * as fs from "fs";
 export const capitalize = (value: string) => {
   let strVal = "";
   const str = value.split(" ");
@@ -13,4 +14,15 @@ export const capitalize = (value: string) => {
 export const humanReadable = (value: any) => {
   if (!value) return "";
   return dateAndTime.format(value, "ddd, MMM DD YYYY");
+};
+
+
+export const readHTMLFile = (path: any, callback: any) => {
+  fs.readFile(path, {encoding: "utf-8"}, function(err, html) {
+    if (err) {
+      callback(err);
+    } else {
+      callback(null, html);
+    }
+  });
 };

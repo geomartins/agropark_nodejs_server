@@ -21,7 +21,13 @@ import * as modules from "./models/module";
 import * as module_categories from "./models/module_category";
 import * as extension_categories from "./models/extension_category";
 import * as departments from "./models/department";
+import * as exphbs from "express-handlebars";
 
+import * as path from "path";
+
+app.engine("hbs", exphbs({extname: "hbs"}));
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname, "views"));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cors());
 app.use(routes);

@@ -2,21 +2,22 @@
 
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
-import PushyService from "../../services/pushy_service";
+import NotificationInterface from "../../interfaces/notification";
 
-class SeedBanksCreateChain {
+class SeedBanksCreateChain extends NotificationInterface {
     private snapshot: any;
     private docRef: any;
     private creatorRef: any;
     private creator: any;
 
-
     constructor(snapshot: any) {
+      super("seed_banks", "/topics/seed_banks");
       this.snapshot = snapshot;
       this.docRef = snapshot.data();
       this.creatorRef = snapshot.data().creator;
       this.creator = "";
     }
+
 
     private async fetchCreatorDetails() {
       this.creator = await new FirestoreService()
@@ -35,23 +36,23 @@ class SeedBanksCreateChain {
 
     async updateConfiguration() {
       await new FirestoreService()
-          .updateConfigurations("seed_banks", "create", this.snapshot.id);
+          .updateConfigurations(this.moduleName, "create", this.snapshot.id);
       return this;
     }
 
-    async updatePushy() {
+    async notify() {
       const fullname = this.creator.firstname + " "+ this.creator.lastname;
       const cropType = this.docRef.name + " "+this.docRef.category;
-      const topic = "/topics/seed_banks";
-      const data = {
-        title: "SeedBank Create Action!!",
-        message: `${fullname} added ${cropType} to seedbank`,
-      };
 
-      // Notifier
-      new FirestoreService().updateModuleNotifier("seed_banks", data );
-      // Pushy
-      new PushyService().pushToTopics(topic, data, {});
+      const genericTitle = "SeedBank Create Action!!";
+      const genericMessage = `${fullname} added ${cropType} to seedbank`;
+
+      const permissions =
+      await new FirestoreService().getModuleNotificationChannel("seed_banks");
+
+      super.prepareNotification(genericTitle, genericMessage, permissions)
+          .sendNotification();
+
       return this;
     }
 
@@ -60,14 +61,14 @@ class SeedBanksCreateChain {
       this.docRef.id = this.snapshot.id;
       await new FirestoreService()
           .updateActivities(
-              "seed_banks", "create", "created a new seed bank",
+              this.moduleName, "create", "created a new seed bank",
               this.creator, this.docRef );
       return this;
     }
 
     async updateAngolia() {
     /** Updating Algolia */
-      (await new AlgoliaService("seed_banks", this.snapshot)).create();
+      (await new AlgoliaService(this.moduleName, this.snapshot)).create();
       return this;
     }
 }

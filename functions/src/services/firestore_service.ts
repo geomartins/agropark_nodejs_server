@@ -10,6 +10,32 @@ class FirestoreService {
     return admin.firestore().collection(name).doc(uid).get();
   }
 
+  async getModuleNotificationChannel(name: string) {
+    const doc = await admin.firestore()
+        .collection("module_notification_channels").doc(name).get();
+    if (doc.exists) {
+      console.log("log exist");
+      return {
+        inApp: doc.data()?.inApp,
+        slack: doc.data()?.slack,
+        sms: doc.data()?.sms,
+        pushy: doc.data()?.pushy,
+        mail: doc.data()?.mail,
+        whatzapp: doc.data()?.whatzapp,
+      };
+    } else {
+      console.log("Nopeeeeeee");
+      return {
+        slack: "",
+        sms: "",
+        pushy: true,
+        inApp: true,
+        mail: "",
+        whatzapp: "",
+      };
+    }
+  }
+
   async updateModuleNotifier(name: string,
       data: {title: string; message: string} ) {
     // Get Role associated with the module
@@ -30,19 +56,17 @@ class FirestoreService {
   }
 
   async updateExtensionNotifier(name:string,
-      data: {title: string; message: string} ) {
-  // Get Role associated with the module
-    // admin.firestore().collection("modules")
-    //     .doc(name).get().then((doc) => {
-    //       if (doc.exists) {
-    //         const roles_ref: string[] = doc.data()?.roles_ref ?? [];
-    //         admin.firestore().collection("extension_notifiers").add({
-    //           ...data,
-    //           roles: roles_ref,
-    //           visited_roles: [],
-    //         });
-    //       }
-    //     });
+      data: {title: string; message: string}, ids: string[] ) {
+    await admin.firestore().collection("extension_notifiers").add({
+      ...data,
+      ids: ids,
+      unvisited_ids: ids,
+      visited_ids: [],
+      extension: name,
+      timestamp: timestamp,
+    });
+
+    return;
   }
   async updateModulesCollectionRoleRef(type: string,
       module: string, role: string) {
