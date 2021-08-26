@@ -1,20 +1,34 @@
 import FirestoreService from "../../services/firestore_service";
 import * as admin from "firebase-admin";
 import WhoisService from "../../services/whois_service";
-import SlackService from "../../services/slack_service";
 import * as pick from "../../repositories/pick";
+import NotificationInterface from "../../interfaces/notification";
 
 
-class DomainsScheduleChain {
+/**
+ * @description Class for runing cronjobs
+ * @class
+ * @extends NotificationInterface
+ */
+class DomainsScheduleChain extends NotificationInterface {
     private expiryDate: any;
     private snapshot: any;
 
+    /**
+     * @constructor
+     */
     constructor() {
+      super("domains", "/topics/domains");
       const date = new Date();
       this.expiryDate = new Date(date.setMonth(date.getMonth()+2));
     }
 
 
+    /**
+     * Fetch Expiring domain snapshot from domain collections in firestore
+     * @return {Promise<DomainsScheduleChain>}
+     * @async
+     */
     async fetchExpiringDomainSnapshot() {
       this.snapshot = await new FirestoreService().
           fetchExpiringDomainSnapshot(
@@ -24,6 +38,10 @@ class DomainsScheduleChain {
     }
 
 
+    /**
+     * This keeps expired domain in sync with database
+     * @return {Promise<DomainsScheduleChain>}
+     */
     async updateAlreadyExpiredDomain() {
       if (this.snapshot.empty) {
         return this;
@@ -43,19 +61,44 @@ class DomainsScheduleChain {
     }
 
 
-    async sendSlackNotification() {
+    // async sendSlackNotification() {
+    //   if (this.snapshot.empty) {
+    //     return this;
+    //   }
+    //   this.snapshot.forEach( async (doc: any) => {
+    //     const data = {
+    //       "provider": doc.data().provider,
+    //       "nameserver": doc.data().nameserver,
+    //       "name": pick.capitalize(doc.data().name.split(".")[0]),
+    //       "expiry_date": pick.humanReadable(doc.data().expiry_date.toDate()),
+    //     };
+    //     await new SlackService("#it-dept", "Dhreminder")
+    //         .push("Expiring Domain Notification", data);
+    //   });
+
+    //   return this;
+    // }
+
+    /**
+     * @description Sends notification to the app
+     * @return {Promise<DomainsScheduleChain>}
+     */
+    async notify() {
       if (this.snapshot.empty) {
         return this;
       }
       this.snapshot.forEach( async (doc: any) => {
-        const data = {
-          "provider": doc.data().provider,
-          "nameserver": doc.data().nameserver,
-          "name": pick.capitalize(doc.data().name.split(".")[0]),
-          "expiry_date": pick.humanReadable(doc.data().expiry_date.toDate()),
-        };
-        await new SlackService("#it-dept", "Dhreminder")
-            .push("Expiring Domain Notification", data);
+        const domainName = pick.capitalize(doc.data().name.split(".")[0]);
+        const expiry_date = pick.humanReadable(doc.data().expiry_date.toDate());
+
+        const genericTitle = "Expiring Domain Notification";
+        const genericMessage = `${domainName} expires on ${expiry_date}`;
+
+        const permissions =
+        await new FirestoreService().getModuleNotificationChannel("domains");
+
+        super.prepareNotification(genericTitle, genericMessage, permissions)
+            .sendNotification();
       });
 
       return this;

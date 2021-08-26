@@ -16,20 +16,26 @@ class AlgoliaService {
       const data = this.snapshot.data();
       data.objectID = this.snapshot.id;
       const index = client.initIndex(this.name);
-      return index.saveObject(data);
+      return index.saveObject(data).catch((err) => {
+        console.log(err);
+      });
     }
 
     async update() {
       const data = this.snapshot.after.data();
       data.objectID = this.snapshot.after.id;
       const index = client.initIndex(this.name);
-      return index.saveObject(data);
+      return index.saveObject(data).catch((err) => {
+        console.log(err);
+      });
     }
 
     async delete() {
       const id = this.snapshot.id;
       const index = client.initIndex(this.name);
-      return index.deleteObject(id);
+      return index.deleteObject(id).catch((err) => {
+        console.log(err);
+      });
     }
 
     static async search(name: string, input: string) {
@@ -38,7 +44,7 @@ class AlgoliaService {
         console.log(hits);
         return hits;
       }).catch((err) => {
-        return err;
+        console.log(err);
       });
     }
 }

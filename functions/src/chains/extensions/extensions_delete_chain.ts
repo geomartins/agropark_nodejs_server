@@ -15,7 +15,8 @@ class ExtensionsDeleteChain {
   }
 
   async updateDependencies() {
-    const newValue = {name: this.docRef.name, category: this.docRef.category};
+    const newValue = {name: this.docRef.name, alt_name: this.docRef.alt_name,
+      category: this.docRef.category};
     const oldValue = {};
     await new FirestoreService()
         .updateRoleExtensionDependencies("delete",

@@ -1,16 +1,17 @@
 import * as functions from "firebase-functions";
-
 import ModulesCreateChain from "../chains/modules/modules_create_chain";
 import ModulesUpdateChain from "../chains/modules/modules_update_chain";
 import ModulesDeleteChain from "../chains/modules/modules_delete_chain";
 
+
+// [Modules] -> [] [@create, @update, @delete]
 export const createModules = functions.firestore
     .document("modules/{docId}")
     .onCreate(async (snap, context) => {
       try {
         const a = new ModulesCreateChain(snap);
-        const b = await (await a.updateSnapshot()).updateConfiguration();
-        await (await b.updateActivities()).updateAngolia().then(() => {
+        const b = await (await a.updateSnapshot()).updateDependency();
+        await (await b.notify()).updateAngolia().then(() => {
           console.log("createModule successfully executed");
           return null;
         });
@@ -33,15 +34,14 @@ export const updateModules = functions.firestore
           return;
         }
 
-        const updateActivities = await (await (await
+        const notify = await (await (await
         updateModuleChain.updateSnapshot()).
-            updateConfiguration()).updateActivities();
+            updateDependencies()).notify();
 
-        await (await updateActivities.updateDependencies())
-            .updateAngolia().then(()=> {
-              console.log("Updated Module Categories Successfully");
-              return null;
-            });
+        await notify.updateAngolia().then(()=> {
+          console.log("Updated Module Categories Successfully");
+          return null;
+        });
         return;
       } catch (err) {
         console.log(err);
@@ -57,8 +57,8 @@ export const deleteModules = functions.firestore
         const moduleDeleteChain =
         new ModulesDeleteChain(snap, context.params.docId);
 
-        await (await (await moduleDeleteChain.updateConfiguration())
-            .updateDependencies()).updateAngolia().then(()=> {
+        await (await (await moduleDeleteChain.updateDependency())
+            .notify()).updateAngolia().then(()=> {
           console.log("Module delete successful");
           return;
         });

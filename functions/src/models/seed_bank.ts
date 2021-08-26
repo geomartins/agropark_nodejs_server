@@ -21,11 +21,10 @@ export const createSeedBanks = functions.firestore
       try {
         const a = new SeedBanksCreateChain(snap);
 
-        const b = await (await a.updateSnapshot()).updateConfiguration();
-        const c = await (await (await b.updateActivities())
-            .updateSnapshot()).notify();
+        const b = await (await (await a.updateSnapshot())
+            .updateDependency()).notify();
 
-        await c.updateAngolia().then(() => {
+        await b.updateAngolia().then(() => {
           console.log("SeedBank created successfully");
           return null;
         });

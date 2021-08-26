@@ -1,19 +1,23 @@
 import FirestoreService from "../../services/firestore_service";
+import NotificationInterface from "../../interfaces/notification";
 
-class RolesExtensionCreateChain {
+class RolesExtensionCreateChain extends NotificationInterface {
     private snapshot: any;
     private docRef: any;
     private creatorRef: any;
     private creator: any;
     private category: string;
     private readonly roleId: string;
+    private alt_name: string;
 
     constructor(snapshot: any, roleId: string) {
+      super("roles", "/topics/roles");
       this.snapshot = snapshot;
       this.docRef = snapshot.data();
       this.creatorRef = snapshot.data().creator;
       this.category = "";
       this.creator = "";
+      this.alt_name = "";
       this.roleId = roleId;
     }
 
@@ -29,8 +33,10 @@ class RolesExtensionCreateChain {
 
       if (result) {
         this.category = result.category;
+        this.alt_name = result.alt_name;
       } else {
         this.category = "";
+        this.alt_name = "";
       }
 
       return this;
@@ -42,6 +48,7 @@ class RolesExtensionCreateChain {
       await this.snapshot.ref.update({
         creator: this.creator,
         category: this.category,
+        alt_name: this.alt_name,
       });
       return this;
     }
@@ -50,16 +57,24 @@ class RolesExtensionCreateChain {
       // This will update extensions_ref
       await new FirestoreService()
           .updateRoleExtensionRef("create", this.roleId,
-              {"name": this.docRef.name, "category": this.category});
+              {"name": this.docRef.name, "category": this.category,
+                "alt_name": this.alt_name});
       return this;
     }
 
-    async updateActivities() {
-      this.docRef.id = this.snapshot.id;
-      await new FirestoreService()
-          .updateActivities(
-              "roles", "create", "created a new roles-extension",
-              this.creator, this.docRef );
+    async notify() {
+      const fullname = this.creator.firstname + " "+ this.creator.lastname;
+
+      const genericTitle = "Role Extension Create Action!!";
+      const genericMessage =
+      `${fullname} added ${this.docRef.name }  to ${this.roleId} `;
+
+      const permissions =
+      await new FirestoreService().getModuleNotificationChannel("roles");
+
+      super.prepareNotification(genericTitle, genericMessage, permissions)
+          .sendNotification();
+
       return this;
     }
 }

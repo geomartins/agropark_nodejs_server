@@ -53,10 +53,17 @@ class ExtensionsUpdateChain {
   }
 
   async updateDependencies() {
-    const newValue = {name: this.afterData.name,
-      category: this.afterData.category};
+    const newValue = {
+      name: this.afterData.name,
+      alt_name: this.afterData.alt_name,
+      category: this.afterData.category,
+      type: this.afterData.type,
+    };
     const oldValue = {name: this.beforeData.name,
-      category: this.beforeData.category};
+      alt_name: this.beforeData.alt_name,
+      category: this.beforeData.category,
+      type: this.beforeData.type,
+    };
 
     await new FirestoreService()
         .updateRoleExtensionDependencies("update",

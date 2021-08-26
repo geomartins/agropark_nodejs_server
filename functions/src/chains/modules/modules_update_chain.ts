@@ -1,7 +1,8 @@
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
+import NotificationInterface from "../../interfaces/notification";
 
-class ModulesUpdateChain {
+class ModulesUpdateChain extends NotificationInterface {
   snapshot: any;
   afterData: any;
   beforeData: any;
@@ -10,6 +11,7 @@ class ModulesUpdateChain {
   editor: any;
   status: boolean;
   constructor(snapshot: any, private readonly moduleId: string) {
+    super("modules", "/topics/modules");
     this.snapshot = snapshot;
     this.afterData = snapshot.after.data();
     this.beforeData = snapshot.before.data();
@@ -44,36 +46,42 @@ class ModulesUpdateChain {
     return this;
   }
 
-  async updateConfiguration() {
-    await new FirestoreService()
-        .updateConfigurations("modules", "update",
-            this.snapshot.after.id);
+
+  async notify() {
+    const fullname = this.editor.firstname + " "+ this.editor.lastname;
+
+    const genericTitle = "Module Update Action!!";
+    const genericMessage = `${fullname} updated ${this.docRef.name} module `;
+
+
+    const permissions =
+    await new FirestoreService().getModuleNotificationChannel("modules");
+
+    super.prepareNotification(genericTitle, genericMessage, permissions)
+        .sendNotification();
 
     return this;
   }
 
+
   async updateDependencies() {
-    const newValue = {name: this.afterData.name,
-      category: this.afterData.category};
+    const newValue = {
+      name: this.afterData.name,
+      alt_name: this.afterData.alt_name,
+      category: this.afterData.category,
+      type: this.afterData.type,
+    };
     const oldValue = {name: this.beforeData.name,
-      category: this.beforeData.category};
+      alt_name: this.beforeData.alt_name,
+      category: this.beforeData.category,
+      type: this.beforeData.type,
+    };
 
     await new FirestoreService()
         .updateRoleModuleDependencies("update",
             this.moduleId, newValue, oldValue );
     return this;
   }
-
-
-  async updateActivities() {
-    this.docRef.id = this.snapshot.after.id;
-    await new FirestoreService()
-        .updateActivities(
-            "modules", "update", "updated a module",
-            this.editor, this.docRef);
-    return this;
-  }
-
 
   async updateAngolia() {
   /** Updating Algolia */

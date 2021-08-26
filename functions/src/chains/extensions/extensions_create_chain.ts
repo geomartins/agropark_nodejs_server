@@ -1,4 +1,3 @@
-
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
 

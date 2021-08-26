@@ -6,6 +6,9 @@ class PushyService {
   constructor() {}
 
   async subscribe(token: string, topics: string[] ) {
+    if (topics.length < 1) {
+      return;
+    }
     return await axios.post("https://api.pushy.me/topics/subscribe?api_key="+SECRET_API_KEY, {
       token: token,
       topics: topics,
@@ -13,6 +16,8 @@ class PushyService {
       headers: {
         "Content-Type": "application/json",
       },
+    }).catch((err) => {
+      console.log(err);
     });
   }
 
@@ -24,27 +29,40 @@ class PushyService {
       headers: {
         "Content-Type": "application/json",
       },
+    }).catch((err) => {
+      console.log(err);
     });
   }
 
   async topics() {
-    return await axios.get("https://api.pushy.me/topics?api_key="+SECRET_API_KEY);
+    return await axios.get("https://api.pushy.me/topics?api_key="+SECRET_API_KEY).catch((err) => {
+      console.log(err);
+    });
   }
 
   async subscribers(topic: string) {
-    return await axios.get("https://api.pushy.me/topics/"+topic+"?api_key="+SECRET_API_KEY);
+    return await axios.get("https://api.pushy.me/topics/"+topic+"?api_key="+SECRET_API_KEY).catch((err) => {
+      console.log(err);
+    });
   }
 
   async unsubscribeOldTopics(device_token: string) {
-    const data = await (await this.deviceInfo(device_token)).data;
-    if (data) {
-      await this.unsubscribe(device_token, data.subscriptions);
-    }
+    // try {
+    //   const data = await (await this.deviceInfo(device_token))?.data;
+    //   if (data) {
+    //     await this.unsubscribe(device_token, data.subscriptions);
+    //   }
+    //   return;
+    // } catch (err) {
+    //   console.log(err);
+    // }
     return;
   }
 
   async deviceInfo(device_token: string) {
-    return await axios.get("https://api.pushy.me/devices/"+device_token+"?api_key="+SECRET_API_KEY);
+    return await axios.get("https://api.pushy.me/devices/"+device_token+"?api_key="+SECRET_API_KEY).catch((err) => {
+      console.log(err);
+    });
   }
 
   async devicePresence() {
@@ -52,11 +70,16 @@ class PushyService {
       headers: {
         "Content-Type": "application/json",
       },
+    }).catch((err) => {
+      console.log(err);
     });
   }
 
   async pushToDevices(devices: string | string[],
       data: {title: string; message: string}, notification: any) {
+    if (devices.length < 1) {
+      return;
+    }
     return await axios.post(" https://api.pushy.me/push?api_key="+SECRET_API_KEY, {
       to: devices,
       data: data,
@@ -65,6 +88,8 @@ class PushyService {
       headers: {
         "Content-Type": "application/json",
       },
+    }).catch((err) => {
+      console.log(err);
     });
   }
 
@@ -78,6 +103,8 @@ class PushyService {
       headers: {
         "Content-Type": "application/json",
       },
+    }).catch((err) => {
+      console.log(err);
     });
   }
 }

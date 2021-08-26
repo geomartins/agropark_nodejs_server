@@ -1,7 +1,8 @@
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
+import NotificationInterface from "../../interfaces/notification";
 
-class DomainsUpdateChain {
+class DomainsUpdateChain extends NotificationInterface {
   snapshot: any;
   afterData: any;
   beforeData: any;
@@ -10,6 +11,7 @@ class DomainsUpdateChain {
   editor: any;
   status: boolean;
   constructor(snapshot: any) {
+    super("domains", "/topics/domains");
     this.snapshot = snapshot;
     this.afterData = snapshot.after.data();
     this.beforeData = snapshot.before.data();
@@ -44,20 +46,20 @@ class DomainsUpdateChain {
     return this;
   }
 
-  async updateConfiguration() {
-    await new FirestoreService()
-        .updateConfigurations("domains", "update",
-            this.snapshot.after.id);
+  async notify() {
+    const fullname = this.editor.firstname + " "+ this.editor.lastname;
+    const item = this.docRef.name;
 
-    return this;
-  }
+    const genericTitle = "Domain Update Action!!";
+    const genericMessage = `${fullname} updated ${item} domain`;
 
-  async updateActivities() {
-    this.docRef.id = this.snapshot.after.id;
-    await new FirestoreService()
-        .updateActivities(
-            "domains", "update", "updated a domain",
-            this.editor, this.docRef);
+
+    const permissions =
+    await new FirestoreService().getModuleNotificationChannel("domains");
+
+    super.prepareNotification(genericTitle, genericMessage, permissions)
+        .sendNotification();
+
     return this;
   }
 

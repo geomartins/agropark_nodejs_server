@@ -1,13 +1,15 @@
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
+import NotificationInterface from "../../interfaces/notification";
 
-class RolesCreateChain {
+class RolesCreateChain extends NotificationInterface {
   private snapshot: any;
   private docRef: any;
   private creator: any;
   private creatorRef: any;
 
   constructor(snapshot: any) {
+    super("roles", "/topics/roles");
     this.snapshot = snapshot;
     this.docRef = snapshot.data();
     this.creatorRef = snapshot.data().creator;
@@ -29,18 +31,25 @@ class RolesCreateChain {
     return this;
   }
 
-  async updateConfiguration() {
+  async updateDependency() {
     await new FirestoreService()
-        .updateConfigurations("roles", "create", this.snapshot.id);
+        .updateDependency(this.moduleName, "create", this.snapshot.id);
     return this;
   }
 
-  async updateActivities() {
-    this.docRef.id = this.snapshot.id;
-    await new FirestoreService()
-        .updateActivities(
-            "roles", "create", "created a new role",
-            this.creator, this.docRef );
+  async notify() {
+    const fullname = this.creator.firstname + " "+ this.creator.lastname;
+    const item = this.docRef.name;
+
+    const genericTitle = "Role Create Action!!";
+    const genericMessage = `${fullname} added ${item} to role`;
+
+    const permissions =
+    await new FirestoreService().getModuleNotificationChannel("roles");
+
+    super.prepareNotification(genericTitle, genericMessage, permissions)
+        .sendNotification();
+
     return this;
   }
 

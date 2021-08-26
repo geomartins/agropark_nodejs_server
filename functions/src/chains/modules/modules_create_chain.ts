@@ -1,8 +1,9 @@
 
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
+import NotificationInterface from "../../interfaces/notification";
 
-class ModulesCreateChain {
+class ModulesCreateChain extends NotificationInterface {
     snapshot: any;
     docRef: any;
     creatorRef: any;
@@ -11,6 +12,7 @@ class ModulesCreateChain {
     category: any;
 
     constructor(snapshot: any) {
+      super("modules", "/topics/modules");
       this.snapshot = snapshot;
       this.docRef = snapshot.data();
       this.creatorRef = snapshot.data().creator;
@@ -33,20 +35,28 @@ class ModulesCreateChain {
       return this;
     }
 
-    async updateConfiguration() {
+    async updateDependency() {
       await new FirestoreService()
-          .updateConfigurations("modules", "create", this.snapshot.id);
+          .updateDependency(this.moduleName, "create", this.snapshot.id);
       return this;
     }
 
-    async updateActivities() {
-      this.docRef.id = this.snapshot.id;
-      await new FirestoreService()
-          .updateActivities(
-              "modules", "create", "created a new module",
-              this.creator, this.docRef );
+    async notify() {
+      const fullname = this.creator.firstname + " "+ this.creator.lastname;
+      const item = this.docRef.name;
+
+      const genericTitle = "Module Create Action!!";
+      const genericMessage = `${fullname} added ${item} to module`;
+
+      const permissions =
+      await new FirestoreService().getModuleNotificationChannel("modules");
+
+      super.prepareNotification(genericTitle, genericMessage, permissions)
+          .sendNotification();
+
       return this;
     }
+
 
     async updateAngolia() {
     /** Updating Algolia */

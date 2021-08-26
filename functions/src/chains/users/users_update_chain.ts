@@ -1,8 +1,9 @@
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
 import AuthenticationService from "../../services/authentication_service";
+import NotificationInterface from "../../interfaces/notification";
 
-class UsersUpdateChain {
+class UsersUpdateChain extends NotificationInterface {
     snapshot: any;
     afterData: any;
     beforeData: any;
@@ -11,6 +12,7 @@ class UsersUpdateChain {
     editor: any;
     status: boolean;
     constructor(snapshot: any) {
+      super("users", "/topics/users");
       this.snapshot = snapshot;
       this.afterData = snapshot.after.data();
       this.beforeData = snapshot.before.data();
@@ -73,12 +75,20 @@ class UsersUpdateChain {
     }
 
 
-    async updateActivities() {
-      this.docRef.id = this.snapshot.after.id;
-      await new FirestoreService()
-          .updateActivities(
-              "users", "update", "updated a user",
-              this.editor, this.docRef);
+    async notify() {
+      const fullname = this.editor.firstname + " "+ this.editor.lastname;
+      const item = this.docRef.firstname + " "+ this.docRef.lastname;
+
+      const genericTitle = "Users Update Action!!";
+      const genericMessage =`${fullname} added ${item} to user`;
+
+
+      const permissions =
+      await new FirestoreService().getModuleNotificationChannel("users");
+
+      super.prepareNotification(genericTitle, genericMessage, permissions)
+          .sendNotification();
+
       return this;
     }
 

@@ -1,23 +1,29 @@
 import FirestoreService from "../../services/firestore_service";
+import NotificationInterface from "../../interfaces/notification";
 
-class UsersDocumentCreateChain {
-    snapshot: any;
-    docRef: any;
-    creatorRef: any;
-    creator: any;
-    userId: string;
+class UsersDocumentCreateChain extends NotificationInterface {
+    private snapshot: any;
+    // private docRef: any;
+    private creatorRef: any;
+    private creator: any;
+    private userId: string;
+    private parentDocRef: any;
 
     constructor(snapshot: any, userId: string) {
+      super("users", "/topics/users");
       this.snapshot = snapshot;
-      this.docRef = snapshot.data();
+      // this.docRef = snapshot.data();
       this.creatorRef = snapshot.data().creator;
       this.creator = "";
       this.userId = userId;
+      this.parentDocRef = "";
     }
 
     private async fetchCreatorDetails() {
       this.creator = await new FirestoreService()
           .getUserByUid(this.creatorRef);
+      this.parentDocRef = await new FirestoreService()
+          .getUserByUid(this.userId);
       return this;
     }
 
@@ -30,12 +36,19 @@ class UsersDocumentCreateChain {
       return this;
     }
 
-    async updateActivities() {
-      this.docRef.id = this.snapshot.id;
-      await new FirestoreService()
-          .updateActivities(
-              "users", "create", "created a new user document",
-              this.creator, this.docRef );
+    async notify() {
+      const fullname = this.creator.firstname + " "+ this.creator.lastname;
+      const item = this.parentDocRef.firstname+ " "+ this.parentDocRef.lastname;
+
+      const genericTitle = "User Document Create Action!!";
+      const genericMessage = `${fullname} added document  to ${item} account`;
+
+      const permissions =
+      await new FirestoreService().getModuleNotificationChannel("users");
+
+      super.prepareNotification(genericTitle, genericMessage, permissions)
+          .sendNotification();
+
       return this;
     }
 }

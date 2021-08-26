@@ -1,6 +1,7 @@
 import FirestoreService from "../../services/firestore_service";
+import NotificationInterface from "../../interfaces/notification";
 
-class RolesModuleUpdateChain {
+class RolesModuleUpdateChain extends NotificationInterface {
   private snapshot: any;
   private afterData: any;
   // private beforeData: any;
@@ -8,7 +9,9 @@ class RolesModuleUpdateChain {
   private editorRef: any;
   private editor: any;
   private status: boolean;
-  constructor(snapshot: any) {
+  private parentId: string;
+  constructor(snapshot: any, parentId: string) {
+    super("roles", "/topics/roles");
     this.snapshot = snapshot;
     this.afterData = snapshot.after.data();
     // this.beforeData = snapshot.before.data();
@@ -16,6 +19,7 @@ class RolesModuleUpdateChain {
     this.editorRef = snapshot.after.data().editor;
     this.editor = "";
     this.status = false;
+    this.parentId = parentId;
   }
 
 
@@ -59,12 +63,20 @@ class RolesModuleUpdateChain {
   //   }
 
 
-  async updateActivities() {
-    this.docRef.id = this.snapshot.after.id;
-    await new FirestoreService()
-        .updateActivities(
-            "roles", "update", "updated a roles-module",
-            this.editor, this.docRef);
+  async notify() {
+    const fullname = this.editor.firstname + " "+ this.editor.lastname;
+    const item = this.docRef.name+ "in "+this.parentId;
+
+    const genericTitle = "Role Module Update Action!!";
+    const genericMessage = `${fullname} updated ${item}  role`;
+
+
+    const permissions =
+    await new FirestoreService().getModuleNotificationChannel("roles");
+
+    super.prepareNotification(genericTitle, genericMessage, permissions)
+        .sendNotification();
+
     return this;
   }
 }

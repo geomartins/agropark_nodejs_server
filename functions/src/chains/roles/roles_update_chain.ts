@@ -1,7 +1,8 @@
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
+import NotificationInterface from "../../interfaces/notification";
 
-class RolesUpdateChain {
+class RolesUpdateChain extends NotificationInterface {
   private snapshot: any;
   private afterData: any;
   private docRef: any;
@@ -9,6 +10,7 @@ class RolesUpdateChain {
   private editor: any;
   private status: boolean;
   constructor(snapshot: any) {
+    super("roles", "/topics/roles");
     this.snapshot = snapshot;
     this.afterData = snapshot.after.data();
     this.docRef = snapshot.after.data();
@@ -42,20 +44,20 @@ class RolesUpdateChain {
     return this;
   }
 
-  async updateConfiguration() {
-    await new FirestoreService()
-        .updateConfigurations("roles", "update",
-            this.snapshot.after.id);
+  async notify() {
+    const fullname = this.editor.firstname + " "+ this.editor.lastname;
+    const item = this.docRef.name;
 
-    return this;
-  }
+    const genericTitle = "Role Update Action!!";
+    const genericMessage = `${fullname} updated ${item} role`;
 
-  async updateActivities() {
-    this.docRef.id = this.snapshot.after.id;
-    await new FirestoreService()
-        .updateActivities(
-            "roles", "update", "updated a role",
-            this.editor, this.docRef);
+
+    const permissions =
+    await new FirestoreService().getModuleNotificationChannel("roles");
+
+    super.prepareNotification(genericTitle, genericMessage, permissions)
+        .sendNotification();
+
     return this;
   }
 

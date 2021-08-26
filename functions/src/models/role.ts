@@ -16,13 +16,15 @@ import RolesModuleCreateChain from "../chains/roles/roles_module_create_chain";
 import RolesModuleDeleteChain from "../chains/roles/roles_module_delete_chain";
 import RolesModuleUpdateChain from "../chains/roles/roles_module_update_chain";
 
+
+// [Roles] -> [] [@create, @update, @delete]
 export const createRoles = functions.firestore
     .document("roles/{docId}")
     .onCreate(async (snap, context) => {
       try {
         const a = new RolesCreateChain(snap);
-        const b = await (await a.updateSnapshot()).updateConfiguration();
-        await (await b.updateActivities()).updateAngolia().then(() => {
+        const b = await (await a.updateSnapshot()).updateDependency();
+        await (await b.notify()).updateAngolia().then(() => {
           console.log("Role created successfully");
           return null;
         });
@@ -36,8 +38,9 @@ export const deleteRoles = functions.firestore
     .document("roles/{docId}")
     .onDelete(async (snap, context) => {
       try {
-        const rolesDeleteChain = new RolesDeleteChain(snap);
-        await (await rolesDeleteChain.updateConfiguration())
+        const rolesDeleteChain =
+        new RolesDeleteChain(snap);
+        await (await (await rolesDeleteChain.updateDependency()).notify())
             .updateAngolia().then(() => {
               console.log("Role deleted successfully");
               return;
@@ -62,12 +65,11 @@ export const updateRoles = functions.firestore
           return;
         }
 
-        const updateActivities = (await (await updateRoleChain.
-            updateSnapshot()).updateConfiguration()).updateActivities();
-
-        await (await updateActivities).updateAngolia().then(()=> {
-          console.log("Role Updated successfully");
-        });
+        (await (await updateRoleChain.
+            updateSnapshot()).notify()).updateAngolia()
+            .then(()=> {
+              console.log("Role Updated successfully");
+            });
         return null;
       } catch (err) {
         console.log(err);
@@ -75,6 +77,8 @@ export const updateRoles = functions.firestore
       }
     });
 
+
+// [Roles] -> [Extension] [@create, @update, @delete]
 export const createRolesExtension = functions.firestore
     .document("roles/{roleId}/extensions/{extensionId}")
     .onCreate(async (snap, context) => {
@@ -84,7 +88,7 @@ export const createRolesExtension = functions.firestore
             .fetchExtensionCategory()).updateSnapshot();
 
         await (await a.updateRoleExtensionRef())
-            .updateActivities().then(() => {
+            .notify().then(() => {
               console.log("Role-Extension created successfully");
               return;
             });
@@ -95,8 +99,6 @@ export const createRolesExtension = functions.firestore
       return null;
     });
 
-
-// DELETE
 export const deleteRolesExtension = functions.firestore
     .document("roles/{roleId}/extensions/{extensionId}")
     .onDelete(async (snap, context) => {
@@ -104,23 +106,23 @@ export const deleteRolesExtension = functions.firestore
         const rolesDeleteExtensionChain =
         new RolesExtensionDeleteChain(snap, context.params.roleId);
 
-        await rolesDeleteExtensionChain.updateRoleExtensionRef().then(() => {
-          console.log("Roles-Extension deleted successfully");
-          return;
-        });
+        await (await rolesDeleteExtensionChain.updateRoleExtensionRef())
+            .notify().then(() => {
+              console.log("Roles-Extension deleted successfully");
+              return;
+            });
       } catch (err) {
         console.log(err);
         return;
       }
     });
 
-// UPDATE
 export const updateRolesExtension = functions.firestore
     .document("roles/{roleId}/extensions/{extensionId}")
     .onUpdate(async (snap, context) => {
       try {
         const updateRoleExtensionUpdateChain =
-        new RolesExtensionUpdateChain(snap);
+        new RolesExtensionUpdateChain(snap, context.params.roleId);
         const status = await (await updateRoleExtensionUpdateChain
             .verifyIfDocIsEdited()).objectStatus;
 
@@ -129,7 +131,7 @@ export const updateRolesExtension = functions.firestore
         }
 
         await (await updateRoleExtensionUpdateChain
-            .updateSnapshot()).updateActivities().then(()=> {
+            .updateSnapshot()).notify().then(()=> {
           console.log("Roles-Extension updated successfully");
         });
         return null;
@@ -140,6 +142,7 @@ export const updateRolesExtension = functions.firestore
     });
 
 
+// [Roles] -> [Module] [@create, @update, @delete]
 export const createRolesModule = functions.firestore
     .document("roles/{roleId}/modules/{moduleId}")
     .onCreate(async (snap, context) => {
@@ -148,8 +151,9 @@ export const createRolesModule = functions.firestore
         RolesModuleCreateChain(snap, context.params.roleId)
             .fetchModuleCategory()).updateSnapshot();
 
+
         await (await a.updateRoleModuleRef())
-            .updateActivities().then(() => {
+            .notify().then(() => {
               console.log("Role-Module created successfully");
               return;
             });
@@ -169,10 +173,11 @@ export const deleteRolesModule = functions.firestore
         const rolesDeleteModuleChain =
         new RolesModuleDeleteChain(snap, context.params.roleId);
 
-        await rolesDeleteModuleChain.updateRoleModuleRef().then(() => {
-          console.log("Roles-Module deleted successfully");
-          return;
-        });
+        await (await rolesDeleteModuleChain.updateRoleModuleRef()).notify()
+            .then(() => {
+              console.log("Roles-Module deleted successfully");
+              return;
+            });
       } catch (err) {
         console.log(err);
         return;
@@ -185,7 +190,7 @@ export const updateRolesModule = functions.firestore
     .onUpdate(async (snap, context) => {
       try {
         const updateRoleModuleUpdateChain =
-        new RolesModuleUpdateChain(snap);
+        new RolesModuleUpdateChain(snap, context.params.roleId);
         const status = await (await updateRoleModuleUpdateChain
             .verifyIfDocIsEdited()).objectStatus;
 
@@ -195,7 +200,7 @@ export const updateRolesModule = functions.firestore
         }
 
         await (await updateRoleModuleUpdateChain
-            .updateSnapshot()).updateActivities().then(()=> {
+            .updateSnapshot()).notify().then(()=> {
           console.log("Roles-Module updated successfully");
         });
         return null;

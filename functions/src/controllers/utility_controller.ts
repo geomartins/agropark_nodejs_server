@@ -2,20 +2,21 @@ import * as admin from "firebase-admin";
 import AlgoliaService from "../services/algolia_service";
 import FirestoreService from "../services/firestore_service";
 import PushyService from "../services/pushy_service";
-
-interface ModuleRefData {
-    name: string;
-    desription: string;
-    modules_ref: []
-  }
+import GeolocationService from "../services/geolocation_service";
 
 export const fetchModuleRefs = async (req: any, res: any, next: any) => {
   const role = req.body.role;
+  const uid = req.info.uid;
+  new GeolocationService().update(uid);
+
   admin.firestore().collection("roles")
       .doc(role).get().then((docRef)=> {
         if (docRef.exists) {
-          const data = docRef.data() as ModuleRefData;
-          return res.status(200).json(data.modules_ref);
+          const modules = docRef.data()?.modules_ref ?? [];
+          const extensions = docRef.data()?.extensions_ref ?? [];
+          const result = [...modules, ...extensions];
+
+          return res.status(200).json(result);
         } else {
           return res.status(200).json([]);
         }
@@ -30,10 +31,11 @@ export const search = async (req: any, res: any, next: any) => {
     const result = await AlgoliaService.search(name, input);
     if (result) {
       return res.status(200).json(result);
+    } else {
+      return res.status(200).json([]);
     }
   } catch (err: any) {
-    console.log(err);
-    next(new Error(err));
+    next(err);
   }
   return;
 };
@@ -44,8 +46,8 @@ export const moduleNotifierCleaner = async (req: any, res: any, next: any) => {
     const module_name = req.body.module_name;
     const uid = req.info.uid;
 
-
-    admin.firestore().collection("module_notifiers")
+    await admin.firestore().collectionGroup("notifiers")
+        .where("ref", "==", "modules")
         .where("module", "==", module_name)
         .where("unvisited_roles", "array-contains", role)
         .get().then((querySnapshot) => {
@@ -56,12 +58,10 @@ export const moduleNotifierCleaner = async (req: any, res: any, next: any) => {
               visited_ids: admin.firestore.FieldValue.arrayUnion(uid),
             });
           });
-          return res.status(200).json({message: "successfully"});
         });
+    return res.status(200).json({message: "successfully"});
   } catch (err: any) {
-    console.log(err);
-    res.status(400).json({message: err});
-    // next(new Error(err));
+    next(err);
   }
 };
 
@@ -69,25 +69,23 @@ export const subscribeTopicsToDevice =
 async (req: any, res: any, next: any) => {
   try {
     const deviceToken = req.body.deviceToken;
-    console.log(deviceToken, "deviceToken");
     const uid = req.info.uid;
-    console.log(uid, "uid");
 
     // Update User Device Token
     await new FirestoreService().updateUserDeviceToken(uid, deviceToken);
 
-    // Get Topics
-    const topics = await new FirestoreService().getTopicsByUid(uid);
-
     // Unsubscribe Old Topic
     await new PushyService().unsubscribeOldTopics(deviceToken);
 
+    // Get Topics
+    const topics = await new FirestoreService().getTopicsByUid(uid);
+    if (topics) {
     // Subscribe New Topic
-    await new PushyService().subscribe(deviceToken, topics);
+      await new PushyService().subscribe(deviceToken, topics);
+    }
 
     return res.status(200).json({message: "device subscribed to topic"});
   } catch (err: any) {
-    console.log(err.message);
-    return next(new Error(err));
+    return next(err);
   }
 };

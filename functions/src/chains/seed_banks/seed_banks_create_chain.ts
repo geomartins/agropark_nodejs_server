@@ -34,9 +34,9 @@ class SeedBanksCreateChain extends NotificationInterface {
       return this;
     }
 
-    async updateConfiguration() {
+    async updateDependency() {
       await new FirestoreService()
-          .updateConfigurations(this.moduleName, "create", this.snapshot.id);
+          .updateDependency(this.moduleName, "create", this.snapshot.id);
       return this;
     }
 
@@ -53,16 +53,6 @@ class SeedBanksCreateChain extends NotificationInterface {
       super.prepareNotification(genericTitle, genericMessage, permissions)
           .sendNotification();
 
-      return this;
-    }
-
-
-    async updateActivities() {
-      this.docRef.id = this.snapshot.id;
-      await new FirestoreService()
-          .updateActivities(
-              this.moduleName, "create", "created a new seed bank",
-              this.creator, this.docRef );
       return this;
     }
 
