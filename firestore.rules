@@ -2,6 +2,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+     match /{path=**}/notifiers/{document} {
+      allow read: if request.auth != null;
+    }
+
+
     // This rule allows anyone on the internet to view, edit, and delete
     // all data in your Firestore database. It is useful for getting
     // started, but it is configured to expire after 30 days because it
@@ -13,49 +18,196 @@ service cloud.firestore {
     // match /{document=**} {
     //   allow read, write: if true;
     // }
-    function signedIn(){
-    	return request.auth != null;
-    }
-    function guest(){
-    	return request.auth == null;
-    }
     
-    function signedInOrGuest(){
-    	return request.auth == null || request.auth != null;
+    //function guest(){
+    //	return request.auth == null;
+    //}
+    
+    //function signedInOrGuest(){
+    //	return request.auth == null || request.auth != null;
+    //}
+
+    function signedIn(){
+      return request.auth != null;
+    }
+
+    function allowMe(moduleId, accessType, permission){
+      let role = request.auth.token.role;
+      return get(/databases/$(database)/documents/roles/$(role)/modules/$(moduleId)).data[accessType][permission];
     }
     
 		// function grantAccess(dbname, permission_type){
 		// return get(/databases/$(database)/documents/roles/$(request.auth.token.moderator)/modules/dbname).data.permission.includes(permission_type)
 		// }
     
-    // function getRole(){
-    //   return request.auth.token.moderator;
-    // }
-    match /users/{document=**} {
-      allow read, create, update, delete: if signedIn();
+    match /users/{document} {
+       allow read, create, update, delete: if true;
+      //allow read: if allowMe('users','primary_access','read');
+      //allow create: if allowMe('users','primary_access','create');
+      //allow update: if allowMe('users','primary_access','update');
+      //allow delete: if allowMe('users','primary_access','delete');
+
+      match /departments/{departmentDoc=**} {
+         allow read, create, update, delete: if true;
+        //allow read: if allowMe('users','secondary_access','read');
+        //allow create: if allowMe('users','secondary_access','create');
+        //allow update: if allowMe('users','secondary_access','update');
+        //allow delete: if allowMe('users','secondary_access','delete');
+      }
+      match /documents/{documentDoc=**} {
+         allow read, create, update, delete: if true;
+        //allow read: if allowMe('users','secondary_access','read');
+        //allow create: if allowMe('users','secondary_access','create');
+        //allow update: if allowMe('users','secondary_access','update');
+        //allow delete: if allowMe('users','secondary_access','delete');
+      }
+      match /kins/{kinDoc=**} {
+         allow read, create, update, delete: if true;
+        //allow read: if allowMe('users','secondary_access','read');
+        //allow create: if allowMe('users','secondary_access','create');
+        //allow update: if allowMe('users','secondary_access','update');
+        //allow delete: if allowMe('users','secondary_access','delete');
+      }
+      match /banks/{bankDoc=**} {
+         allow read, create, update, delete: if true;
+        //allow read: if allowMe('users','secondary_access','read');
+        //allow create: if allowMe('users','secondary_access','create');
+        //allow update: if allowMe('users','secondary_access','update');
+        //allow delete: if allowMe('users','secondary_access','delete');
+      }
+      match /resets/{resetDoc=**} {
+         allow read, create, update, delete: if true;
+        //allow read: if allowMe('users','secondary_access','read');
+        //allow create: if allowMe('users','secondary_access','create');
+        //allow update: if allowMe('users','secondary_access','update');
+        //allow delete: if allowMe('users','secondary_access','delete');
+      }
+      
+
     }
-    match /roles/{document=**} {
-      allow read, create, update: if signedIn();
+
+    match /roles/{document} {
+       allow read, create, update, delete: if true;
+      //allow read: if allowMe('roles','primary_access','read');
+      //allow create: if allowMe('roles','primary_access','create');
+      //allow update: if allowMe('roles','primary_access','update');
+      //allow delete: if allowMe('roles','primary_access','delete');
+
+      match /modules/{moduleDoc=**} {
+         allow read, create, update, delete: if true;
+        //allow read: if allowMe('roles','secondary_access','read');
+        //allow create: if allowMe('roles','secondary_access','create');
+        //allow update: if allowMe('roles','secondary_access','update');
+        //allow delete: if allowMe('roles','secondary_access','delete');
+      }
+
+       match /extensions/{extensionDoc=**} {
+         allow read, create, update, delete: if true;
+        //allow read: if allowMe('roles','secondary_access','read');
+        //allow create: if allowMe('roles','secondary_access','create');
+        //allow update: if allowMe('roles','secondary_access','update');
+        //allow delete: if allowMe('roles','secondary_access','delete');
+      }
     }
-    match /configurations/{document=**} {
-      allow read, create, update: if signedInOrGuest();
-    }
-    match /module_categories/{document=**} {
-      allow read, create, update, delete: if signedIn();
-    }
+
     match /modules/{document=**} {
-      allow read, create, update, delete: if signedIn();
+       allow read, create, update, delete: if true;
+      //allow read: if allowMe('modules','primary_access','read');
+      //allow create: if allowMe('modules','primary_access','create');
+      //allow update: if allowMe('modules','primary_access','update');
+      //allow delete: if allowMe('modules','primary_access','delete');
     }
-    match /departments/{document=**} {
-      allow read, create, update, delete: if signedIn();
+
+    match /extensions/{document=**} {
+       allow read, create, update, delete: if true;
+      //allow read: if allowMe('extensions','primary_access','read');
+      //allow create: if allowMe('extensions','primary_access','create');
+      //allow update: if allowMe('extensions','primary_access','update');
+      //allow delete: if allowMe('extensions','primary_access','delete');
     }
-    match /units/{document=**} {
+
+    match /module_categories/{document=**} {
       allow read, create, update, delete: if true;
+      //allow read: if allowMe('modules','primary_access','read');
+      //allow create: if allowMe('modules','primary_access','create');
+      //allow update: if allowMe('modules','primary_access','update');
+      //allow delete: if allowMe('modules','primary_access','delete');
+    }
+
+    match /extension_categories/{document=**} {
+      allow read, create, update, delete: if true;
+      //allow read: if allowMe('extension_categories','primary_access','read');
+      //allow create: if allowMe('extension_categories','primary_access','create');
+      //allow update: if allowMe('extension_categories','primary_access','update');
+      //allow delete: if allowMe('extension_categories','primary_access','delete');
     }
 
     match /module_activities/{document=**} {
-      allow read, create, update, delete: if true;
+      allow read: if allowMe('module_activities','primary_access','read');
+      allow create: if allowMe('module_activities','primary_access','create');
+      allow update: if allowMe('module_activities','primary_access','update');
+      allow delete: if allowMe('module_activities','primary_access','delete');
     }
+
+    match /departments/{document=**} {
+      allow read, create, update, delete: if true;
+      allow read: if allowMe('departments','primary_access','read');
+      allow create: if allowMe('departments','primary_access','create');
+      allow update: if allowMe('departments','primary_access','update');
+      allow delete: if allowMe('departments','primary_access','delete');
+    }
+
+    match /domains/{document=**} {
+       allow read, create, update, delete: if true;
+      //allow read: if allowMe('domains','primary_access','read');
+      //allow create: if allowMe('domains','primary_access','create');
+      //allow update: if allowMe('domains','primary_access','update');
+      //allow delete: if allowMe('domains','primary_access','delete');
+    }
+
+    match /seed_banks/{document=**} {
+       allow read, create, update, delete: if true;
+      //allow read: if allowMe('seed_banks','primary_access','read');
+      //allow create: if allowMe('seed_banks','primary_access','create');
+      //allow update: if allowMe('seed_banks','primary_access','update');
+      //allow delete: if allowMe('seed_banks','primary_access','delete');
+    }
+
+    match /seed_bank_crop_categories/{document=**} {
+       allow read, create, update, delete: if true;
+      //allow read: if allowMe('seed_banks','primary_access','read');
+      //allow create: if allowMe('seed_banks','primary_access','create');
+      //allow update: if allowMe('seed_banks','primary_access','update');
+      //allow delete: if allowMe('seed_banks','primary_access','delete');
+    }
+
+    match /feedbacks/{document=**} {
+       allow read, create, update, delete: if true;
+      //allow read: if allowMe('feedbacks','primary_access','read');
+      //allow create: if allowMe('feedbacks','primary_access','create');
+      //allow update: if allowMe('feedbacks','primary_access','update');
+      //allow delete: if allowMe('feedbacks','primary_access','delete');
+    }
+
+    match /module_notifiers/{document=**} {
+       allow read, create, update, delete: if true;
+    }
+
+    match /extension_notifiers/{document=**} {
+       allow read, create, update, delete: if true;
+    }
+
+    match /configurations/{document=**} {
+      allow read, create, update: if signedIn();
+    }
+
+    match /dependencies/{document=**} {
+       allow read, create, update: if signedIn();
+      //allow read: if signedIn();
+      //allow create: if allowMe('users','primary_access','create');
+      //allow update: if allowMe('users','primary_access','update');
+    }
+
     
   }
 }
