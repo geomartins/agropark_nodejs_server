@@ -1,3 +1,5 @@
+
+import * as functions from "firebase-functions";
 import FirestoreService from "./firestore_service";
 const IPGeolocationAPI = require("ip-geolocation-api-javascript-sdk");
 const GeolocationParams =
@@ -11,7 +13,7 @@ class GeolocationService {
     private geolocationParams: any;
     constructor() {
       this.ipgeolocationApi =
-      new IPGeolocationAPI("faea162fa7ce4987b100cc407abc9fbf", true);
+      new IPGeolocationAPI(functions.config().ip_geolocation.key, true);
       this.geolocationParams = new GeolocationParams();
     }
     update(uid: string, ip: string | null = null) {

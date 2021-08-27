@@ -1,10 +1,11 @@
+import * as functions from "firebase-functions";
 import axios from "axios";
-const accountSid = "AC0ff37d5fbf8f420923d4eb93f60b6e01";
-const authToken = "876f275661263b3a43922340824d8a0d";
-const appMobileNumber = "+14155238886";
+const accountSid = functions.config().twillo.id;
+const authToken = functions.config().twillo.key;
+const appMobileNumber = functions.config().twillo.mobile;
 const appMobileName = "AgroPark-Erp";
 const smsNigeriaToken =
-"s6SAVGn4I9WTnQOK3vbuljbZO1ht9NkH36hzkCyUEOSewfOFuWLWzdhGrDT6";
+functions.config().sms_nigeria.key;
 
 const client = require("twilio")(accountSid, authToken);
 

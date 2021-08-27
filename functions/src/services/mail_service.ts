@@ -1,3 +1,5 @@
+
+import * as functions from "firebase-functions";
 import * as fs from "fs";
 import * as path from "path";
 import * as handlebars from "handlebars";
@@ -5,7 +7,7 @@ const nodemailer = require("nodemailer");
 const mandrillTransport = require("nodemailer-mandrill-transport");
 const smtpTransport = nodemailer.createTransport(mandrillTransport({
   auth: {
-    apiKey: "P8KYWvyLBBuJXwk7hfCxYQ",
+    apiKey: functions.config().mandrill.key,
   },
 }));
 
