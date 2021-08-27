@@ -42,6 +42,7 @@ export const createDomains = functions.firestore
 
 /**
  * @param deleteDomains
+ * @static
  */
 export const deleteDomains = functions.firestore
     .document("domains/{docId}")

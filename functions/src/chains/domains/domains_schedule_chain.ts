@@ -10,6 +10,8 @@ import NotificationInterface from "../../interfaces/notification";
  * @class
  * @extends NotificationInterface
  */
+
+
 class DomainsScheduleChain extends NotificationInterface {
     private expiryDate: any;
     private snapshot: any;

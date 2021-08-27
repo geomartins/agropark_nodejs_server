@@ -30,6 +30,10 @@
     
         <h2><span class="attribs"><span class="type-signature"></span></span>DomainsDeleteChain<span class="signature">(snapshot)</span><span class="type-signature"></span></h2>
         
+            <div class="class-description"><p>The purpose of this class is to facilitate easy deletion of domain,
+updating firestore and angolia of the deleted domain,
+and notifying the app of the deleted domain</p></div>
+        
     
 </header>
 
@@ -38,6 +42,8 @@
     
         
 
+    
+    <h2>Constructor</h2>
     
 
     
@@ -109,6 +115,127 @@
 
 
 
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>snapshot</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>firestore snapshot object</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>docRef</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>snapshot document reference</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>deleterRef</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>person deleting the domain reference</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>deleter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>person deleting the domain</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
 <dl class="details">
 
     
@@ -138,12 +265,25 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chains_domains_domains_delete_chain.js.html">chains/domains/domains_delete_chain.js</a>, <a href="chains_domains_domains_delete_chain.js.html#line9">line 9</a>
+        <a href="chains_domains_domains_delete_chain.js.html">chains/domains/domains_delete_chain.js</a>, <a href="chains_domains_domains_delete_chain.js.html#line25">line 25</a>
     </li></ul></dd>
     
 
     
 
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="FirestoreService.html"><code>FirestoreService</code></a></li>
+        
+            <li><a href="AlgoliaService.html"><code>AlgoliaService</code></a></li>
+        
+            <li><a href="WhoisService.html"><code>WhoisService</code></a></li>
+        
+            <li><a href="NotificationInterface.html"><code>NotificationInterface</code></a></li>
+        </ul>
+    </dd>
     
 
     
@@ -170,6 +310,17 @@
 
     
     </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="NotificationInterface.html">NotificationInterface</a></li>
+    </ul>
+
 
     
 
@@ -202,7 +353,8 @@
 
 
 <div class="description">
-    <p>Helps sends notification to the app</p>
+    <p>Helps sends notification to the app
+informing them of the domain delete action</p>
 </div>
 
 
@@ -246,12 +398,19 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chains_domains_domains_delete_chain.js.html">chains/domains/domains_delete_chain.js</a>, <a href="chains_domains_domains_delete_chain.js.html#line33">line 33</a>
+        <a href="chains_domains_domains_delete_chain.js.html">chains/domains/domains_delete_chain.js</a>, <a href="chains_domains_domains_delete_chain.js.html#line57">line 57</a>
     </li></ul></dd>
     
 
     
 
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="NotificationInterface.html"><code>NotificationInterface</code></a></li>
+        </ul>
+    </dd>
     
 
     
@@ -308,7 +467,8 @@
 
 
 <div class="description">
-    <p>Help update domain document in algolia</p>
+    <p>Help update domain document in algolia so that
+firestore and angolia would be have the same document information</p>
 </div>
 
 
@@ -352,12 +512,19 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chains_domains_domains_delete_chain.js.html">chains/domains/domains_delete_chain.js</a>, <a href="chains_domains_domains_delete_chain.js.html#line47">line 47</a>
+        <a href="chains_domains_domains_delete_chain.js.html">chains/domains/domains_delete_chain.js</a>, <a href="chains_domains_domains_delete_chain.js.html#line75">line 75</a>
     </li></ul></dd>
     
 
     
 
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="AlgoliaService.html"><code>AlgoliaService</code></a></li>
+        </ul>
+    </dd>
     
 
     
@@ -414,7 +581,8 @@
 
 
 <div class="description">
-    <p>helps to update class dependencies</p>
+    <p>helps to update class dependencies
+for the domain module</p>
 </div>
 
 
@@ -458,7 +626,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chains_domains_domains_delete_chain.js.html">chains/domains/domains_delete_chain.js</a>, <a href="chains_domains_domains_delete_chain.js.html#line24">line 24</a>
+        <a href="chains_domains_domains_delete_chain.js.html">chains/domains/domains_delete_chain.js</a>, <a href="chains_domains_domains_delete_chain.js.html#line44">line 44</a>
     </li></ul></dd>
     
 
@@ -528,7 +696,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Aug 27 2021 01:59:08 GMT+0100 (West Africa Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Aug 27 2021 12:06:59 GMT+0100 (West Africa Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

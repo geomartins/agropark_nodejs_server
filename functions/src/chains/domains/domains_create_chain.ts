@@ -15,6 +15,7 @@ import NotificationInterface from "../../interfaces/notification";
   * @property { string } creator - creator of domain
   *
   *
+  *
   * @see {@link FirestoreService}
   * @see {@link AlgoliaService}
   * @see {@link WhoisService}
@@ -60,6 +61,10 @@ class DomainsCreateChain extends NotificationInterface {
    * for the newly created domain from whoisservice
    * Information such as expiry_date, providers etc
    * @return {Promise<DomainsCreateChain>}
+   * @async
+   * @public
+   * @see {@link WhoisService}
+   *
    */
   async fetchRecord() {
     const record = await new WhoisService().fetchRecord(this.docRef.name);
@@ -126,7 +131,10 @@ class DomainsCreateChain extends NotificationInterface {
    * is added to angolia.... This will be useful when searching for
    * data in angolia
    * @async
+   * @public
    * @return  {Promise<DomainsCreateChain>}
+   * @see {@link AlgoliaService}
+   *
    */
   async updateAngolia() {
     /** Updating Algolia */

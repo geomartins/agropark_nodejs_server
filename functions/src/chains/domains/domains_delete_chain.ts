@@ -4,7 +4,23 @@ import AlgoliaService from "../../services/algolia_service";
 import NotificationInterface from "../../interfaces/notification";
 
 /**
+ * The purpose of this class is to facilitate easy deletion of domain,
+ * updating firestore and angolia of the deleted domain,
+ * and notifying the app of the deleted domain
  * @class
+ * @extends NotificationInterface
+ * @property { object } snapshot - firestore snapshot object
+  * @property { object } docRef - snapshot document reference
+  * @property { object } deleterRef - person deleting the domain reference
+  * @property { string } deleter - person deleting the domain
+  *
+  *
+  *
+  * @see {@link FirestoreService}
+  * @see {@link AlgoliaService}
+  * @see {@link WhoisService}
+  * @see {@link NotificationInterface}
+
  */
 class DomainsDeleteChain extends NotificationInterface {
   private docRef: any;
@@ -23,7 +39,11 @@ class DomainsDeleteChain extends NotificationInterface {
 
 
   /**
-   * @description helps to update class dependencies
+   * helps to update class dependencies
+   * for the domain module
+   *
+   * @async
+   * @public
    * @return {Promise<DomainsDeleteChain>}
    */
   async updateDependency() {
@@ -32,9 +52,14 @@ class DomainsDeleteChain extends NotificationInterface {
     return this;
   }
 
+
   /**
    * Helps sends notification to the app
+   * informing them of the domain delete action
+   * @async
+   * @public
    * @return {Promise<DomainsDeleteChain>}
+   * @see {@link NotificationInterface}
    */
   async notify() {
     const fullname = this.deleter;
@@ -55,8 +80,12 @@ class DomainsDeleteChain extends NotificationInterface {
   }
 
   /**
-   * @description Help update domain document in algolia
+   * Help update domain document in algolia so that
+   *  firestore and angolia would be have the same document information
+   * @async
+   * @public
    * @return {Promise<DomainsDeleteChain>}
+   * @see {@link AlgoliaService}
    */
   async updateAngolia() : Promise<this> {
     /** Updating Algolia */

@@ -30,9 +30,8 @@
     
         <h2><span class="attribs"><span class="type-signature"></span></span>DomainsUpdateChain<span class="signature">()</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>The purpose of this class is to facilate creating of domain
-updating dependencies, updating snapshot, send notification
-to the app once it done and updating angolia</p></div>
+            <div class="class-description"><p>The purpose of this class is to facilate easy updating of domain
+coupled with sending notification about the update to the app</p></div>
         
     
 </header>
@@ -66,6 +65,173 @@ to the app once it done and updating angolia</p></div>
 
 
 
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>snapshot</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>firestore snapshot object</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>afterData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>firestore afterData snapshot object</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>beforerData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>firestore beforeData snapshot object</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>docRef</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>snapshot document reference</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>editorRef</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>editor object</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>editor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>editor of domain</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
 <dl class="details">
 
     
@@ -95,12 +261,23 @@ to the app once it done and updating angolia</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chains_domains_domains_update_chain.js.html">chains/domains/domains_update_chain.js</a>, <a href="chains_domains_domains_update_chain.js.html#line13">line 13</a>
+        <a href="chains_domains_domains_update_chain.js.html">chains/domains/domains_update_chain.js</a>, <a href="chains_domains_domains_update_chain.js.html#line25">line 25</a>
     </li></ul></dd>
     
 
     
 
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="FirestoreService.html"><code>FirestoreService</code></a></li>
+        
+            <li><a href="AlgoliaService.html"><code>AlgoliaService</code></a></li>
+        
+            <li><a href="NotificationInterface.html"><code>NotificationInterface</code></a></li>
+        </ul>
+    </dd>
     
 
     
@@ -152,7 +329,524 @@ to the app once it done and updating angolia</p></div>
     
 
     
+        <h3 class="subsection-title">Members</h3>
 
+        
+            
+<h4 class="name" id="objectStatus"><span class="type-signature"></span>objectStatus<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>This helps confirms if the document has been edited...
+it returns true if it has been edited..</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-default">Default Value:</dt>
+    <dd class="tag-default"><ul class="dummy">
+            <li>false</li>
+        </ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="chains_domains_domains_update_chain.js.html">chains/domains/domains_update_chain.js</a>, <a href="chains_domains_domains_update_chain.js.html#line43">line 43</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="notify"><span class="type-signature">(async) </span>notify<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="DomainsUpdateChain.html">DomainsUpdateChain</a>>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Helps sends notification to the app
+informing them of the domain update action</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="chains_domains_domains_update_chain.js.html">chains/domains/domains_update_chain.js</a>, <a href="chains_domains_domains_update_chain.js.html#line88">line 88</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="NotificationInterface.html"><code>NotificationInterface</code></a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="DomainsUpdateChain.html">DomainsUpdateChain</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="updateAngolia"><span class="type-signature">(async) </span>updateAngolia<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="DomainsUpdateChain.html">DomainsUpdateChain</a>>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Help update domain document in algolia so that
+firestore and angolia would be have the same document information</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="chains_domains_domains_update_chain.js.html">chains/domains/domains_update_chain.js</a>, <a href="chains_domains_domains_update_chain.js.html#line106">line 106</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="AlgoliaService.html"><code>AlgoliaService</code></a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="DomainsUpdateChain.html">DomainsUpdateChain</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="updateSnapshot"><span class="type-signature">(async) </span>updateSnapshot<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="DomainsUpdateChain.html">DomainsUpdateChain</a>>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>It fetches the current editor details
+and update it to the snapshot</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="chains_domains_domains_update_chain.js.html">chains/domains/domains_update_chain.js</a>, <a href="chains_domains_domains_update_chain.js.html#line74">line 74</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="DomainsUpdateChain.html">DomainsUpdateChain</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="verifyIfDocIsEdited"><span class="type-signature">(async) </span>verifyIfDocIsEdited<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="DomainsUpdateChain.html">DomainsUpdateChain</a>>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Helps verify if the doument is updated or not..</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="chains_domains_domains_update_chain.js.html">chains/domains/domains_update_chain.js</a>, <a href="chains_domains_domains_update_chain.js.html#line51">line 51</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="DomainsUpdateChain.html">DomainsUpdateChain</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
     
 
     
@@ -174,7 +868,7 @@ to the app once it done and updating angolia</p></div>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Aug 27 2021 01:59:08 GMT+0100 (West Africa Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Aug 27 2021 12:06:59 GMT+0100 (West Africa Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

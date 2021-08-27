@@ -3,11 +3,23 @@ import AlgoliaService from "../../services/algolia_service";
 import NotificationInterface from "../../interfaces/notification";
 
 /**
- * The purpose of this class is to facilate creating of domain
- * updating dependencies, updating snapshot, send notification
- * to the app once it done and updating angolia
+ * The purpose of this class is to facilate easy updating of domain
+ * coupled with sending notification about the update to the app
  * @class
  * @extends NotificationInterface
+ * @property { object } snapshot - firestore snapshot object
+ * @property { object } afterData - firestore afterData snapshot object
+ * @property { object } beforerData - firestore beforeData snapshot object
+  * @property { object } docRef - snapshot document reference
+  * @property { object } editorRef - editor object
+  * @property { string } editor - editor of domain
+  *
+  *
+  *
+  * @see {@link FirestoreService}
+  * @see {@link AlgoliaService}
+  * @see {@link NotificationInterface}
+
  */
 class DomainsUpdateChain extends NotificationInterface {
   snapshot: any;
@@ -29,10 +41,22 @@ class DomainsUpdateChain extends NotificationInterface {
   }
 
 
+  /**
+   * This helps confirms if the document has been edited...
+   * it returns true if it has been edited..
+   *
+   * @default false
+   * @return {boolean}
+   */
   get objectStatus() {
     return this.status;
   }
 
+  /**
+   * Helps verify if the doument is updated or not..
+   * @async
+   * @return {Promise<DomainsUpdateChain>}
+   */
   async verifyIfDocIsEdited() {
     if (typeof this.afterData.editor == "string") {
       this.status = true;
@@ -40,12 +64,24 @@ class DomainsUpdateChain extends NotificationInterface {
     return this;
   }
 
+  /**
+   * Help fetch editor details and assigning the result to the
+   * @async
+   * @private
+   * @return {Promise<DomainsUpdateChain>}
+   */
   private async fetchUserDetails() {
     this.editor = await new FirestoreService()
         .getUserByUid(this.editorRef);
     return this;
   }
 
+  /**
+   * It fetches the current editor details
+   *  and update it to the snapshot
+   * @async
+   * @return {Promise<DomainsUpdateChain>}
+   */
   async updateSnapshot() {
     await this.fetchUserDetails();
     await this.snapshot.after.ref.update({editor: this.editor});
@@ -53,6 +89,15 @@ class DomainsUpdateChain extends NotificationInterface {
     return this;
   }
 
+
+  /**
+   * Helps sends notification to the app
+   * informing them of the domain update action
+   * @async
+   * @public
+   * @return {Promise<DomainsUpdateChain>}
+   * @see {@link NotificationInterface}
+   */
   async notify() {
     const fullname = this.editor.firstname + " "+ this.editor.lastname;
     const item = this.docRef.name;
@@ -71,6 +116,14 @@ class DomainsUpdateChain extends NotificationInterface {
   }
 
 
+  /**
+   * Help update domain document in algolia so that
+   *  firestore and angolia would be have the same document information
+   * @async
+   * @public
+   * @return {Promise<DomainsUpdateChain>}
+   * @see {@link AlgoliaService}
+   */
   async updateAngolia() {
   /** Updating Algolia */
     (await new AlgoliaService("domains", this.snapshot)).update();
