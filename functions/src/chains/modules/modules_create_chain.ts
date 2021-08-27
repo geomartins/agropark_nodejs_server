@@ -3,6 +3,9 @@ import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
 import NotificationInterface from "../../interfaces/notification";
 
+/**
+ * @class
+ */
 class ModulesCreateChain extends NotificationInterface {
     snapshot: any;
     docRef: any;

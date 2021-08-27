@@ -9,6 +9,9 @@ const smtpTransport = nodemailer.createTransport(mandrillTransport({
   },
 }));
 
+/**
+ * @namespace
+ */
 class MailService {
   private template: any;
 

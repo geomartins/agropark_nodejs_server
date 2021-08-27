@@ -3,6 +3,9 @@ import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
 import PushyService from "../../services/pushy_service";
 
+/**
+ * @class
+ */
 class SeedBanksDeleteChain {
   constructor(protected snapshot: any) {}
 

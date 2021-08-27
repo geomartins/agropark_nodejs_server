@@ -6,6 +6,9 @@ import PushyService from "../services/pushy_service";
 import MailService from "../services/mail_service";
 import FirestoreService from "../services/firestore_service";
 
+/**
+ * @interface
+ */
 interface Notification{
     moduleName: string;
     topicName: string;
@@ -47,7 +50,11 @@ interface Notification{
 
   }
 
-
+/**
+ * @class
+ * @abstract
+ * @extends Notification
+ */
 abstract class NotificationInterface implements Notification {
     moduleName: string;
     topicName: string;

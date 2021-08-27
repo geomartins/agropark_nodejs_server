@@ -4,6 +4,9 @@ import ModulesUpdateChain from "../chains/modules/modules_update_chain";
 import ModulesDeleteChain from "../chains/modules/modules_delete_chain";
 
 
+/**
+ * @module module
+ */
 // [Modules] -> [] [@create, @update, @delete]
 export const createModules = functions.firestore
     .document("modules/{docId}")

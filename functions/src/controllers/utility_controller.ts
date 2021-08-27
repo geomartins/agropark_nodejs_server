@@ -4,6 +4,13 @@ import FirestoreService from "../services/firestore_service";
 import PushyService from "../services/pushy_service";
 import GeolocationService from "../services/geolocation_service";
 
+/**
+ *
+ * @param {object} req
+ * @param {object} res
+ * @param {object} next
+ * @async
+ */
 export const fetchModuleRefs = async (req: any, res: any, next: any) => {
   const role = req.body.role;
   const uid = req.info.uid;
@@ -23,7 +30,13 @@ export const fetchModuleRefs = async (req: any, res: any, next: any) => {
       });
 };
 
-
+/**
+ *
+ * @param {object} req request object
+ * @param {object} res response object
+ * @param {object} next next
+ * @return {any}
+ */
 export const search = async (req: any, res: any, next: any) => {
   try {
     const name = req.body.name;
@@ -40,6 +53,14 @@ export const search = async (req: any, res: any, next: any) => {
   return;
 };
 
+/**
+ *
+ * @param {object} req request object
+ * @param {object} res response object
+ * @param {object} next next
+ * @async
+ * @return {any}
+ */
 export const moduleNotifierCleaner = async (req: any, res: any, next: any) => {
   try {
     const role = req.body.role;
@@ -65,6 +86,15 @@ export const moduleNotifierCleaner = async (req: any, res: any, next: any) => {
   }
 };
 
+
+/**
+ *
+ * @param {object} req request object
+ * @param {object} res response object
+ * @param {object} next next
+ * @async
+ * @return {any}
+ */
 export const subscribeTopicsToDevice =
 async (req: any, res: any, next: any) => {
   try {

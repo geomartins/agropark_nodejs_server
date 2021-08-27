@@ -1,6 +1,10 @@
 import axios from "axios";
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+
+/**
+ * @namespace
+ */
 class WhoisService {
   constructor() {}
 

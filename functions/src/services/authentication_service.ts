@@ -1,4 +1,7 @@
 import * as admin from "firebase-admin";
+/**
+ * @namespace
+ */
 class AuthenticationService {
   constructor() {}
 

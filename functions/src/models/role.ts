@@ -17,6 +17,9 @@ import RolesModuleDeleteChain from "../chains/roles/roles_module_delete_chain";
 import RolesModuleUpdateChain from "../chains/roles/roles_module_update_chain";
 
 
+/**
+ * @module role
+ */
 // [Roles] -> [] [@create, @update, @delete]
 export const createRoles = functions.firestore
     .document("roles/{docId}")

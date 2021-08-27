@@ -14,6 +14,9 @@ type NotificationData = {
 }
 
 
+/**
+ * @namespace
+ */
 class SmsService {
   constructor(private notificationData: NotificationData ) {}
 

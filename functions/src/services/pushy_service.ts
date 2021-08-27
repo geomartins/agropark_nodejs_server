@@ -2,6 +2,9 @@ import axios from "axios";
 const SECRET_API_KEY =
 "ce8c666c3454e9776b1f83d119b3526dfc7a39aff0f94afc7229e5505e7ce384";
 
+/**
+ * @namespace
+ */
 class PushyService {
   constructor() {}
 

@@ -10,6 +10,9 @@ import FeedbacksUpdateChain from
   "../chains/feedbacks/feedbacks_update_chain";
 
 
+/**
+ * @module feedback
+ */
 export const createFeedbacks = functions.firestore
     .document("feedbacks/{docId}")
     .onCreate(async (snap, context) => {

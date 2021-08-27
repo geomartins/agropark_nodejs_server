@@ -4,6 +4,9 @@ import * as functions from "firebase-functions";
 const client = algoliasearch(functions.config().algolia.app_id,
     functions.config().algolia.key);
 
+/**
+ * @namespace
+ */
 class AlgoliaService {
     name: string;
     snapshot: any;

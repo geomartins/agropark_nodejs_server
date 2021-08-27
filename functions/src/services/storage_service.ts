@@ -1,3 +1,6 @@
+/**
+ * @namespace
+ */
 class StorageService {
   constructor() {}
 }

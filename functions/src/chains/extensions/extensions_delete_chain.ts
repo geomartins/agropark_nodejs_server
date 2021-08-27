@@ -1,5 +1,9 @@
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
+
+/**
+ * @class
+ */
 class ExtensionsDeleteChain {
   private docRef: any;
   constructor(protected snapshot: any, private readonly extensionId: string) {

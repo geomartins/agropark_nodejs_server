@@ -3,6 +3,9 @@ const IPGeolocationAPI = require("ip-geolocation-api-javascript-sdk");
 const GeolocationParams =
 require("ip-geolocation-api-javascript-sdk/GeolocationParams.js");
 
+/**
+ * @namespace
+ */
 class GeolocationService {
     private ipgeolocationApi: any;
     private geolocationParams: any;

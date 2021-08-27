@@ -5,6 +5,9 @@ const timestamp = admin.firestore.FieldValue.serverTimestamp();
 type RoleModuleDependencyValue =
 { name: string; alt_name: string; category: string; } | {};
 
+/**
+ * @namespace
+ */
 class FirestoreService {
   constructor() {}
   async getObjectByUid(name: string, uid: string) {

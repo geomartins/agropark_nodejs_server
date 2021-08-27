@@ -34,6 +34,9 @@ import UsersKinUpdateChain from
   "../chains/users/users_kin_update_chain";
 
 
+/**
+ * @module user
+ */
 // [Users] -> [] [@create, @update, @delete]
 export const createUsers = functions.firestore
     .document("users/{userId}")

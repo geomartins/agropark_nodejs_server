@@ -1,6 +1,9 @@
 import FirestoreService from "../../services/firestore_service";
 import NotificationInterface from "../../interfaces/notification";
 
+/**
+ * @class
+ */
 class UsersKinUpdateChain extends NotificationInterface {
     snapshot: any;
     afterData: any;

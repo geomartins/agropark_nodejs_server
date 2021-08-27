@@ -13,6 +13,13 @@ import NotificationInterface from "../../interfaces/notification";
   * @property { object } docRef - snapshot document reference
   * @property { object } creatorRef - creator object
   * @property { string } creator - creator of domain
+  *
+  *
+  * @see {@link FirestoreService}
+  * @see {@link AlgoliaService}
+  * @see {@link WhoisService}
+  * @see {@link NotificationInterface}
+
  */
 class DomainsCreateChain extends NotificationInterface {
   snapshot: any;
@@ -37,6 +44,7 @@ class DomainsCreateChain extends NotificationInterface {
    * This helps fetch the full information of the
    * person who created the domain
    * @return {Promise<DomainsCreateChain>}
+   * @private
    * @async
    *
    */
@@ -80,6 +88,7 @@ class DomainsCreateChain extends NotificationInterface {
 
   /**
    * This function helps update any dependency attached to this class
+   * @public
    * @async
    * @return {Promise<DomainsCreateChain>}
    */

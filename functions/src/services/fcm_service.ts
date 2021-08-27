@@ -1,5 +1,8 @@
 import * as admin from "firebase-admin";
 
+/**
+ * @namespace
+ */
 class FcmService {
   public async pushToTopic(topic: string, payload: any) {
     return await admin.messaging().sendToTopic(topic, payload);

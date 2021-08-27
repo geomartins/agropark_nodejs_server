@@ -2,6 +2,13 @@ import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
 import NotificationInterface from "../../interfaces/notification";
 
+/**
+ * The purpose of this class is to facilate creating of domain
+ * updating dependencies, updating snapshot, send notification
+ * to the app once it done and updating angolia
+ * @class
+ * @extends NotificationInterface
+ */
 class DomainsUpdateChain extends NotificationInterface {
   snapshot: any;
   afterData: any;

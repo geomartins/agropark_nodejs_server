@@ -3,6 +3,9 @@ import AlgoliaService from "../../services/algolia_service";
 import AuthenticationService from "../../services/authentication_service";
 import NotificationInterface from "../../interfaces/notification";
 
+/**
+ * @class
+ */
 class UsersUpdateChain extends NotificationInterface {
     snapshot: any;
     afterData: any;

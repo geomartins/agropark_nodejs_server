@@ -1,6 +1,9 @@
 import FirestoreService from "../../services/firestore_service";
 import NotificationInterface from "../../interfaces/notification";
 
+/**
+ * @class
+ */
 class UsersDepartmentDeleteChain extends NotificationInterface {
     private snapshot: any;
     private deleter: any;

@@ -1,6 +1,9 @@
 import * as functions from "firebase-functions";
 const slack = require("slack-notify")(functions.config().slack.webhook);
 
+/**
+ * @namespace
+ */
 class SlackService {
   private channel: string;
   private username: string;

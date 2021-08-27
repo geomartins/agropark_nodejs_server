@@ -1,6 +1,9 @@
 import FirestoreService from "../../services/firestore_service";
 import PushyService from "../../services/pushy_service";
 
+/**
+ * @class
+ */
 class SeedBanksInventoryUpdateChain {
   private snapshot: any;
   private afterData: any;

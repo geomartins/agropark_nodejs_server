@@ -1,6 +1,10 @@
 import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
 import NotificationInterface from "../../interfaces/notification";
+
+/**
+ * @class
+ */
 class ModulesDeleteChain extends NotificationInterface {
   private docRef: any;
   deleterRef: any;

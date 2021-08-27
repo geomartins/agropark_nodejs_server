@@ -7,7 +7,9 @@ import ExtensionsUpdateChain from
 import ExtensionsDeleteChain from
   "../chains/extensions/extensions_delete_chain";
 
-
+/**
+ * @module extension
+ */
 export const createExtensions = functions.firestore
     .document("extensions/{docId}")
     .onCreate(async (snap, context) => {

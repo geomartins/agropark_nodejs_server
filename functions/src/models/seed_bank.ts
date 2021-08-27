@@ -15,6 +15,9 @@ import SeedBanksInventoryCreateChain from
 import SeedBanksInventoryUpdateChain
   from "../chains/seed_banks/seed_banks_inventory_update_chain";
 
+/**
+ * @module seed_bank
+ */
 export const createSeedBanks = functions.firestore
     .document("seed_banks/{docId}")
     .onCreate(async (snap, context) => {

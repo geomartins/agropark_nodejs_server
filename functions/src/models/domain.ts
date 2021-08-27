@@ -9,6 +9,11 @@ import DomainsScheduleChain from "../chains/domains/domains_schedule_chain";
  * Domain Module used to create domain,
  *  update domain, delete domain and schedule domain
  * @module domain
+ *
+ * @requires {@link DomainsCreateChain }
+ * @requires {@link DomainsUpdateChain }
+ * @requires {@link DomainsDeleteChain }
+ * @requires {@link DomainsScheduleChain }
  */
 
 

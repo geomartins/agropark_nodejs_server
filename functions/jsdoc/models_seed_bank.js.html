@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/seed_bank.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/seed_bank.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.updateSeedBanksInventory = exports.createSeedBanksInventory = exports.updateSeedBanks = exports.deleteSeedBanks = exports.createSeedBanks = void 0;
+const functions = require("firebase-functions");
+const seed_banks_create_chain_1 = require("../chains/seed_banks/seed_banks_create_chain");
+const seed_banks_delete_chain_1 = require("../chains/seed_banks/seed_banks_delete_chain");
+const seed_banks_update_chain_1 = require("../chains/seed_banks/seed_banks_update_chain");
+const seed_banks_inventory_create_chain_1 = require("../chains/seed_banks/seed_banks_inventory_create_chain");
+const seed_banks_inventory_update_chain_1 = require("../chains/seed_banks/seed_banks_inventory_update_chain");
+/**
+ * @module seed_bank
+ */
+exports.createSeedBanks = functions.firestore
+    .document("seed_banks/{docId}")
+    .onCreate(async (snap, context) => {
+    try {
+        const a = new seed_banks_create_chain_1.default(snap);
+        const b = await (await (await a.updateSnapshot())
+            .updateDependency()).notify();
+        await b.updateAngolia().then(() => {
+            console.log("SeedBank created successfully");
+            return null;
+        });
+    }
+    catch (err) {
+        console.log(err);
+        return;
+    }
+});
+exports.deleteSeedBanks = functions.firestore
+    .document("seed_banks/{docId}")
+    .onDelete(async (snap, context) => {
+    try {
+        const deleteSeedBankChain = new seed_banks_delete_chain_1.default(snap);
+        await (await (await deleteSeedBankChain.updateConfiguration())
+            .updatePushy()).updateAngolia().then(() => {
+            console.log("SeedBank deleted successfully");
+            return;
+        });
+    }
+    catch (err) {
+        console.log(err);
+        return;
+    }
+    return;
+});
+exports.updateSeedBanks = functions.firestore
+    .document("seed_banks/{docId}")
+    .onUpdate(async (snap, context) => {
+    try {
+        const updateSeedBankChain = new seed_banks_update_chain_1.default(snap);
+        const status = await (await updateSeedBankChain
+            .verifyIfDocIsEdited()).objectStatus;
+        if (status === false) {
+            return;
+        }
+        const updateActivities = await (await (await updateSeedBankChain.updateSnapshot())
+            .updateConfiguration()).updateActivities();
+        await (await updateActivities.updatePushy())
+            .updateAngolia().then(() => {
+            console.log("SeedBank Updated Successfully");
+            return;
+        });
+    }
+    catch (err) {
+        console.log(err);
+        return null;
+    }
+    return;
+});
+exports.createSeedBanksInventory = functions.firestore
+    .document("seed_banks/{seedBankId}/inventories/{inventoryId}")
+    .onCreate(async (snap, context) => {
+    try {
+        const a = await (await new seed_banks_inventory_create_chain_1.default(snap, context.params.seedBankId)
+            .updateSnapshot()).updateActivities();
+        await a.updatePushy().then(() => {
+            console.log("SeedBanks-Inventory created successfully");
+            return;
+        });
+    }
+    catch (err) {
+        console.log(err);
+        return;
+    }
+    return null;
+});
+exports.updateSeedBanksInventory = functions.firestore
+    .document("seed_banks/{seedBankId}/inventories/{inventoryId}")
+    .onUpdate(async (snap, context) => {
+    try {
+        const updateSeedBanksInventoryUpdateChain = new seed_banks_inventory_update_chain_1.default(snap);
+        const status = await (await updateSeedBanksInventoryUpdateChain
+            .verifyIfDocIsEdited()).objectStatus;
+        if (status === false) {
+            return;
+        }
+        const updateActivity = await (await updateSeedBanksInventoryUpdateChain
+            .updateSnapshot()).updateActivities();
+        await updateActivity.updatePushy().then(() => {
+            console.log("SeedBanks-Inventory updated successfully");
+        });
+        return null;
+    }
+    catch (err) {
+        console.log(err);
+        return null;
+    }
+});
+//# sourceMappingURL=seed_bank.js.map</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-domain.html">domain</a></li><li><a href="module-extension.html">extension</a></li><li><a href="module-feedback.html">feedback</a></li><li><a href="module-module.html">module</a></li><li><a href="module-role.html">role</a></li><li><a href="module-seed_bank.html">seed_bank</a></li><li><a href="module-user.html">user</a></li></ul><h3>Namespaces</h3><ul><li><a href="AlgoliaService.html">AlgoliaService</a></li><li><a href="AuthenticationService.html">AuthenticationService</a></li><li><a href="FcmService.html">FcmService</a></li><li><a href="FirestoreService.html">FirestoreService</a></li><li><a href="GeolocationService.html">GeolocationService</a></li><li><a href="MailService.html">MailService</a></li><li><a href="PushyService.html">PushyService</a></li><li><a href="SlackService.html">SlackService</a></li><li><a href="SmsService.html">SmsService</a></li><li><a href="StorageService.html">StorageService</a></li><li><a href="WhatzappService.html">WhatzappService</a></li><li><a href="WhoisService.html">WhoisService</a></li></ul><h3>Classes</h3><ul><li><a href="DomainsCreateChain.html">DomainsCreateChain</a></li><li><a href="DomainsDeleteChain.html">DomainsDeleteChain</a></li><li><a href="DomainsScheduleChain.html">DomainsScheduleChain</a></li><li><a href="DomainsUpdateChain.html">DomainsUpdateChain</a></li><li><a href="ExtensionsCreateChain.html">ExtensionsCreateChain</a></li><li><a href="ExtensionsDeleteChain.html">ExtensionsDeleteChain</a></li><li><a href="ExtensionsUpdateChain.html">ExtensionsUpdateChain</a></li><li><a href="FeedbacksCreateChain.html">FeedbacksCreateChain</a></li><li><a href="FeedbacksDeleteChain.html">FeedbacksDeleteChain</a></li><li><a href="FeedbacksUpdateChain.html">FeedbacksUpdateChain</a></li><li><a href="ModulesCreateChain.html">ModulesCreateChain</a></li><li><a href="ModulesDeleteChain.html">ModulesDeleteChain</a></li><li><a href="ModulesUpdateChain.html">ModulesUpdateChain</a></li><li><a href="NotificationInterface.html">NotificationInterface</a></li><li><a href="RolesCreateChain.html">RolesCreateChain</a></li><li><a href="RolesDeleteChain.html">RolesDeleteChain</a></li><li><a href="RolesExtensionCreateChain.html">RolesExtensionCreateChain</a></li><li><a href="RolesExtensionDeleteChain.html">RolesExtensionDeleteChain</a></li><li><a href="RolesExtensionUpdateChain.html">RolesExtensionUpdateChain</a></li><li><a href="RolesModuleCreateChain.html">RolesModuleCreateChain</a></li><li><a href="RolesModuleDeleteChain.html">RolesModuleDeleteChain</a></li><li><a href="RolesModuleUpdateChain.html">RolesModuleUpdateChain</a></li><li><a href="RolesUpdateChain.html">RolesUpdateChain</a></li><li><a href="SeedBanksCreateChain.html">SeedBanksCreateChain</a></li><li><a href="SeedBanksDeleteChain.html">SeedBanksDeleteChain</a></li><li><a href="SeedBanksInventoryCreateChain.html">SeedBanksInventoryCreateChain</a></li><li><a href="SeedBanksInventoryUpdateChain.html">SeedBanksInventoryUpdateChain</a></li><li><a href="SeedBanksUpdateChain.html">SeedBanksUpdateChain</a></li><li><a href="UsersBankCreateChain.html">UsersBankCreateChain</a></li><li><a href="UsersBankDeleteChain.html">UsersBankDeleteChain</a></li><li><a href="UsersBankUpdateChain.html">UsersBankUpdateChain</a></li><li><a href="UsersCreateChain.html">UsersCreateChain</a></li><li><a href="UsersDeleteChain.html">UsersDeleteChain</a></li><li><a href="UsersDepartmentCreateChain.html">UsersDepartmentCreateChain</a></li><li><a href="UsersDepartmentDeleteChain.html">UsersDepartmentDeleteChain</a></li><li><a href="UsersDepartmentUpdateChain.html">UsersDepartmentUpdateChain</a></li><li><a href="UsersDocumentCreateChain.html">UsersDocumentCreateChain</a></li><li><a href="UsersDocumentDeleteChain.html">UsersDocumentDeleteChain</a></li><li><a href="UsersKinCreateChain.html">UsersKinCreateChain</a></li><li><a href="UsersKinDeleteChain.html">UsersKinDeleteChain</a></li><li><a href="UsersKinUpdateChain.html">UsersKinUpdateChain</a></li><li><a href="UsersResetCreateChain.html">UsersResetCreateChain</a></li><li><a href="UsersUpdateChain.html">UsersUpdateChain</a></li></ul><h3>Global</h3><ul><li><a href="global.html#fetchModuleRefs">fetchModuleRefs</a></li><li><a href="global.html#moduleNotifierCleaner">moduleNotifierCleaner</a></li><li><a href="global.html#search">search</a></li><li><a href="global.html#subscribeTopicsToDevice">subscribeTopicsToDevice</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Aug 27 2021 01:33:59 GMT+0100 (West Africa Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

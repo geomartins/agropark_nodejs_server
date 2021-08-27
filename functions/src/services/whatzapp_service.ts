@@ -8,6 +8,9 @@ type NotificationData = {
     message: string | "";
 }
 
+/**
+ * @namespace
+ */
 class WhatzappService {
   constructor(private notificationData: NotificationData ) {}
 

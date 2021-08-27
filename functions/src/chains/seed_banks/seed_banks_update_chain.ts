@@ -2,6 +2,9 @@ import FirestoreService from "../../services/firestore_service";
 import AlgoliaService from "../../services/algolia_service";
 import PushyService from "../../services/pushy_service";
 
+/**
+ * @class
+ */
 class SeedBanksUpdateChain {
   snapshot: any;
   afterData: any;

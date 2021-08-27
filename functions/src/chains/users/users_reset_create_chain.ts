@@ -1,7 +1,9 @@
 import FirestoreService from "../../services/firestore_service";
 import AuthenticationService from "../../services/authentication_service";
 import NotificationInterface from "../../interfaces/notification";
-
+/**
+ * @class
+ */
 class UsersResetCreateChain extends NotificationInterface {
     private snapshot: any;
     // private docRef: any;
